@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
 // Import components
-import Toast from "../../components/toastMessage/toast";
 
 // Import css
 import "./contact_page.css"

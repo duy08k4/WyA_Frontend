@@ -1,5 +1,5 @@
 interface interface__Verification__callback {
-    (status: boolean): void
+    (status: boolean, clear: boolean): void
 }
 
 export type {interface__Verification__callback}

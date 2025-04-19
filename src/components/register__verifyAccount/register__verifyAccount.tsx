@@ -8,7 +8,8 @@ import "./register__verifyAccount.css"
 
 // Import services
 import createAccount from "../../services/create_account.serv";
-import verifyOTP from "../../services/verifyOTP.serv";
+import verifyOTP from "../../services/verify_OTP.serv";
+import sendOTP from "../../services/send_OTP.serv";
 
 // Import custom hooks
 import { useToast } from "../toastMessage/toast";
@@ -34,8 +35,29 @@ const Register__verifyAccount: React.FC<{ data: interface__CreateAccount, closeV
     ]
 
     // Handler
-    const handleClose = () => {
-        closeVerification(false)
+    const handleClose = (clearForm: boolean) => {
+        closeVerification(false, clearForm)
+    }
+
+    const handleResendOTP = async () => {
+        openSpinner()
+        // const sendOTP_response = await sendOTP({ gmail })
+        await sendOTP({ method: "resend", gmail: data.gmail }).then((res) => {
+            closeSpinner()
+            if (res.status == 200) {
+                addToast({
+                    typeToast: "i",
+                    content: res.data.mess,
+                    duration: 5
+                })
+            } else {
+                addToast({
+                    typeToast: "w",
+                    content: res.data.mess,
+                    duration: 5
+                })
+            }
+        })
     }
 
     const handleInputCode = (index: number, inputData: string) => {
@@ -51,26 +73,29 @@ const Register__verifyAccount: React.FC<{ data: interface__CreateAccount, closeV
             if (!inputCode.includes("")) {
                 openSpinner()
                 await verifyOTP({ inputOtp: [...inputCode].join("") }).then(async (verify_res) => {
+                    closeSpinner()
                     if (verify_res.status == 200) {
                         await createAccount(data).then((createAccount_res) => {
-                            closeSpinner()
                             if (createAccount_res.status == 200) {
                                 addToast({
                                     typeToast: "s",
                                     content: createAccount_res.data.mess,
                                     duration: 5
                                 })
-                                handleClose()
+                                handleClose(true)
                             } else {
                                 addToast({
                                     typeToast: "e",
                                     content: createAccount_res.data.mess,
                                     duration: 5
                                 })
+                                handleClose(true)
                             }
                         }).catch((err) => { throw new Error(err) })
 
                     } else {
+                        setInputCode(["", "", "", ""])
+                        inputRef[0].current?.focus()
                         addToast({
                             typeToast: "e",
                             content: verify_res.data.mess,
@@ -110,7 +135,10 @@ const Register__verifyAccount: React.FC<{ data: interface__CreateAccount, closeV
                     ))}
                 </div>
 
-                <button className="verification__form--closeBtn" onClick={handleClose}>close</button>
+                <div className="verification__form__btnContainer">
+                    <button className="verification__form--resendBtn" onClick={handleResendOTP}>Resend</button>
+                    <button className="verification__form--closeBtn" onClick={() => handleClose(false)}>Close</button>
+                </div>
             </motion.div>
         </motion.div>
     )

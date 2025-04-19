@@ -10,7 +10,7 @@ import { useToast } from "../../components/toastMessage/toast";
 import { useSpinner } from "../../components/spinner/spinner";
 
 // Import services
-import sendOTP from "../../services/sendOTP.serv";
+import sendOTP from "../../services/send_OTP.serv";
 
 // Import css
 import "./register_page.css"
@@ -147,7 +147,7 @@ const RegisterPage: React.FC = () => {
             // Gọi service để gửi mã OTP (Backend cần tạo 1 API để gửi mã)
             openSpinner()
             // const sendOTP_response = await sendOTP({ gmail })
-            await sendOTP({ gmail }).then((res) => {
+            await sendOTP({ method: "send", gmail }).then((res) => {
                 closeSpinner()
                 setIsVerification(true)
                 if (res.status == 200) {
@@ -174,8 +174,15 @@ const RegisterPage: React.FC = () => {
         }
     }
 
-    const handleCloseVerification = (state: boolean) => {
+    const handleCloseVerification = (state: boolean, clearForm: boolean) => {
         setIsVerification(state)
+
+        if(clearForm) {
+            setUsername("")
+            setGmail("")
+            setPassword("")
+            setConfirmPassword("")
+        }
     }
 
 

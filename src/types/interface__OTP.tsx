@@ -1,4 +1,5 @@
 interface interface__SendOTP {
+    method: string
     gmail: string
 }
 

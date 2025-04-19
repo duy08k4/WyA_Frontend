@@ -58,12 +58,30 @@
     }
 }
 
+.verification__form__btnContainer {
+    height: fit-content;
+    width: 100%;
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.verification__form--resendBtn {
+    /* text-transform: uppercase; */
+    color: lightgray;
+    /* font-weight: bold; */
+    background-color: #152131;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
 .verification__form--closeBtn {
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     color: black;
     font-weight: bold;
-    background-color: #eeeeee;
+    background-color: #dddddd;
     padding: 10px 40px;
-    margin-top: 20px;
     border-radius: 5px;
 }
