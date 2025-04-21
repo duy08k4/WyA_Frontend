@@ -73,7 +73,7 @@ const Register__verifyAccount: React.FC<{ data: interface__CreateAccount, closeV
             if (!inputCode.includes("")) {
                 openSpinner()
                 await verifyOTP({ inputOtp: [...inputCode].join("") }).then(async (verify_res) => {
-                    closeSpinner()
+                    // closeSpinner()
                     if (verify_res.status == 200) {
                         await createAccount(data).then((createAccount_res) => {
                             if (createAccount_res.status == 200) {
@@ -102,6 +102,8 @@ const Register__verifyAccount: React.FC<{ data: interface__CreateAccount, closeV
                             duration: 5
                         })
                     }
+
+                    closeSpinner()
                 }).catch((err) => { throw new Error(err) })
             }
         })()
