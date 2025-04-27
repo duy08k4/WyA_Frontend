@@ -4,8 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
 // Import custom hooks
-import { useToast } from "../../components/toastMessage/toast";
-import { useSpinner } from "../../components/spinner/spinner";
+import { useToast } from "../../hooks/toastMessage/toast";
+import { useSpinner } from "../../hooks/spinner/spinner";
+import { useCache } from "../../hooks/cache/cache";
+
+import { cacheSetGmail } from "../../redux/reducers/user.reducer";
 
 // Import services
 import loginAccount from "../../services/login_account.serv";
@@ -23,6 +26,7 @@ export default function LoginPage() {
     // Custom hooks
     const { addToast } = useToast()
     const { openSpinner, closeSpinner } = useSpinner()
+    const { cacheSetData } = useCache()
 
     // Data
     const [gmail, setGmail] = useState<string>("")
@@ -83,6 +87,7 @@ export default function LoginPage() {
             }).then((res) => {
                 closeSpinner()
                 if (res.status == 200) {
+                    cacheSetData(cacheSetGmail(res.data.user.gmail))
                     redirect.push("/")
                 } else {
                     addToast({

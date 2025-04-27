@@ -24,14 +24,12 @@ interface Friend {
 interface ChatboxProps {
   friend: Friend;                              // Friend data for the current chat
   onBack: () => void;                         // Callback for back button
-  onSendMessage?: (message: string) => void;   // Optional callback for sending messages
 }
 
 // chatbox component
 const Chatbox: React.FC<ChatboxProps> = ({ 
   friend, 
   onBack, 
-  onSendMessage = () => {} 
 }) => {
   // State
   const [userOnline, setUserOnline] = useState<boolean>(false)
@@ -90,7 +88,6 @@ const Chatbox: React.FC<ChatboxProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      onSendMessage(newMessage);
       setNewMessage('');
     }
   };

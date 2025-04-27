@@ -1,10 +1,17 @@
 // Import library
 import { IonPage } from "@ionic/react";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import { useHistory } from "react-router";
 
 // Import components
 import Chatbox from "../../components/chatting__chatBox/Chatting_chatbox";
+
+// Import services
+import searchUser from "../../services/searchUser.serv";
+
+// Import interface
+import { interface__ChattingPage__user } from "../../types/interface__ChattingPage";
+
 // Import css
 import "./chatting_page.css"
 import "../../main.css"
@@ -25,9 +32,28 @@ const ChattingPage: React.FC = () => {
   const redirect = useHistory()
 
   // Data
-  const [search, setSearch] = useState<string>("")
+  const [searchInput, setSearchInput] = useState<string>("")
+  const [searchResult, setSearchResult] = useState([])
 
   // Handler Effects
+  // Debounce
+  useEffect( () => {
+    if (searchInput != "") {
+      const debounce = setTimeout( async() => {
+        await searchUser(searchInput).then((res) => {
+          setSearchResult(res)
+        }).catch((err) => {
+          console.log(err)
+        })
+      }, 1000)
+      
+      return () => {
+        clearTimeout(debounce)
+      }
+    }
+  }, [searchInput])
+
+  // Click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (searchPopupRef.current && !searchPopupRef.current.contains(event.target as Node)) {
@@ -39,7 +65,7 @@ const ChattingPage: React.FC = () => {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('touchstart', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
@@ -51,29 +77,22 @@ const ChattingPage: React.FC = () => {
   const handleSearchClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsSearchActive(true);
-    console.log("Search clicked, isSearchActive:", isSearchActive);
   };
-  
+
   const handleBackFromChat = () => {
     setSelectedFriend(null);
-  };
-  
-  const handleSendMessage = (message: string) => {
-    console.log("Sending message:", message);
-    // Implement message sending logic here 
   };
 
   const handleDirection = () => {
     redirect.push("/")
   }
-  
+
   return (
     <IonPage>
       {selectedFriend ? (
-        <Chatbox 
-          friend={selectedFriend} 
+        <Chatbox
+          friend={selectedFriend}
           onBack={handleBackFromChat}
-          onSendMessage={handleSendMessage}
         />
       ) : (
         <div className="chat">
@@ -86,7 +105,7 @@ const ChattingPage: React.FC = () => {
                 </button>
 
                 <div className="chat__input--search">
-                  <input type="text" placeholder="Find your friend..." onClick={handleSearchClick} onChange={(e) => setSearch(e.target.value)} value={search} />
+                  <input type="text" placeholder="Find your friend..." onClick={handleSearchClick} onChange={(e) => setSearchInput(e.target.value)} value={searchInput} />
                 </div>
 
                 <div className="chat__avatar--profile">
@@ -96,17 +115,23 @@ const ChattingPage: React.FC = () => {
 
               {isSearchActive && (
                 <div className="chat__search--history">
-                  <div className="chat__search--item">
-                    <div className="chat__search--user">
-                      <div className="chat__search--userAvartar">
-                        <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
-                      </div>
+                  {searchResult.length == 0 ? "" : (
+                    searchResult.map((user: interface__ChattingPage__user, index) => {
+                      return (
+                        <div key={index} className="chat__search--item">
+                          <div className="chat__search--user">
+                            <div className="chat__search--userAvartar">
+                              <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                            </div>
 
-                      <p className="chat__name--usersearch">Username</p>
-                    </div>
+                            <p className="chat__name--usersearch">{user.username}</p>
+                          </div>
 
-                    <button className="chat__button--request">Request</button>
-                  </div>
+                          <button className="chat__button--request">Request</button>
+                        </div>
+                      )
+                    })
+                  )}
                 </div>
               )}
             </div>
@@ -144,7 +169,7 @@ const ChattingPage: React.FC = () => {
             <div className="chat__section">
               <h2 className="chat__title--section">Friends (number)</h2>
               <div className="chat__container">
-                <div 
+                <div
                   className="chat__item--friend"
                   onClick={() => setSelectedFriend({
                     id: '1',

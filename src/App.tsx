@@ -1,6 +1,5 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { Route } from 'react-router-dom';
+import { Route, useHistory, useLocation } from 'react-router-dom';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,11 +32,52 @@ import MapPage from './pages/map_page/map_page';
 import LoginPage from './pages/login_page/login_page';
 import RegisterPage from './pages/register_page/register_page';
 
+// Import services
+import checkAccess from './services/checkAccess.serv';
+import { useEffect, useState } from 'react';
+import { useCache } from './hooks/cache/cache';
+import { cacheSetFriendRequest, cacheSetFullUserInformation, cacheSetGmail } from './redux/reducers/user.reducer';
+
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
+const App: React.FC = () => {
+  const [userData, setUserData] = useState<object>()
+  const pageLocation = useLocation()
+  const redirect = useHistory()
+  const { cacheSetData, enableListener_userInformation } = useCache()
+
+  console.log(pageLocation.pathname)
+  // Check Login
+
+  useEffect(() => {
+    (async () => {
+      await checkAccess().then(async (data) => {
+        if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
+          if (data.status == 200) {
+            const gmail = data.data.user.gmail
+            enableListener_userInformation(gmail)
+            redirect.push("/")
+          }
+        } else {
+          if (data.status != 200) {
+            redirect.push("/login")
+          }
+
+          const gmail = data.data.user.gmail
+          enableListener_userInformation(gmail)
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    })()
+  }, [pageLocation])
+
+  // useEffect(() => {
+  //   cacheSetData(cacheSetFullUserInformation(userData))
+  // }, [userData])
+
+  return (
+    <IonApp>
       <IonRouterOutlet>
         <Route exact path="/" component={DashboardPage} />
         <Route exact path="/contact" component={ContactPage} />
@@ -50,8 +90,8 @@ const App: React.FC = () => (
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/register" component={RegisterPage} />
       </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+    </IonApp>
+  )
+};
 
 export default App;

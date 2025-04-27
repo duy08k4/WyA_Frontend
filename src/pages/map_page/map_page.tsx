@@ -1,7 +1,6 @@
 // Import library
 import { IonPage } from "@ionic/react";
 import React, { useEffect, useRef, useState } from "react";
-import "leaflet/dist/leaflet.css";
 import { useHistory } from "react-router";
 
 // Import components
@@ -10,6 +9,7 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 // Import css
 import "./map_page.css";
 import "../../main.css";
+import "leaflet/dist/leaflet.css";
 
 // Component for handling resize map
 const MapResizeHandler = () => {

@@ -6,8 +6,8 @@ import React, { use, useEffect, useState } from "react";
 import Register__verifyAccount from "../../components/register__verifyAccount/register__verifyAccount";
 
 // Import custom hooks
-import { useToast } from "../../components/toastMessage/toast";
-import { useSpinner } from "../../components/spinner/spinner";
+import { useToast } from "../../hooks/toastMessage/toast";
+import { useSpinner } from "../../hooks/spinner/spinner";
 
 // Import services
 import sendOTP from "../../services/send_OTP.serv";

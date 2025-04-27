@@ -1,30 +1,37 @@
 // Import library
 import { IonPage } from "@ionic/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
 // Import components
+
+// Redux
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
 
 // Import css
 import "./dashboard_page.css"
 import "../../main.css"
 
-const DashboardPage:React.FC = () => {
+const DashboardPage: React.FC = () => {
     // State
     const redirect = useHistory()
 
     // Error
 
     // Data
-
+    const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+    const username = useSelector((state: RootState) => state.userInformation.username)
+    const all = useSelector((state: RootState) => state.userInformation)
+    
     // Handlers
-    const handleDirection = (endtryPoint:string) => {
+    const handleDirection = (endtryPoint: string) => {
         redirect.push(`/${endtryPoint}`)
     }
 
-
     return (
         <IonPage>
+
             <div className="dashboard__page">
                 <div className="dashboard__profileCard--container">
                     <div className="dashboard__profileCard__card">
@@ -33,8 +40,8 @@ const DashboardPage:React.FC = () => {
                         </div>
 
                         <div className="dashboard__profileCard__infoBox">
-                            <h3 className="dashboard__profileCard__infoBox--username">Username</h3>
-                            <p className="dashboard__profileCard__infoBox--gmail">duytran.290804@gmail.com</p>
+                            <h3 className="dashboard__profileCard__infoBox--username">{username}</h3>
+                            <p className="dashboard__profileCard__infoBox--gmail">{gmail}</p>
                         </div>
                     </div>
                 </div>
@@ -79,6 +86,7 @@ const DashboardPage:React.FC = () => {
                 </div>
             </div>
         </IonPage>
+
     )
 
 }

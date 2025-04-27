@@ -12,8 +12,8 @@ import verifyOTP from "../../services/verify_OTP.serv";
 import sendOTP from "../../services/send_OTP.serv";
 
 // Import custom hooks
-import { useToast } from "../toastMessage/toast";
-import { useSpinner } from "../spinner/spinner";
+import { useToast } from "../../hooks/toastMessage/toast";
+import { useSpinner } from "../../hooks/spinner/spinner";
 
 // Import interface
 import { interface__CreateAccount } from "../../types/interface__CreateAccount";

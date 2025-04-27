@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { DocumentData } from "firebase/firestore";
 
 // Define initial values
 const initial_userInformation = {
-    username: "abc",
-    gmail: "example@gmail.com",
+    username: "",
+    gmail: "",
     uuid: "",
     avartarCode: "",
     friends: {
@@ -12,7 +13,7 @@ const initial_userInformation = {
     },
     requests: [] as string[],
     setting: {},
-    profileStatus: "public"
+    profileStatus: ""
 }
 
 // Export reducer
@@ -21,34 +22,46 @@ export const userInformation = createSlice({
     initialState: initial_userInformation,
     reducers: {
         // Các action trong reducer sẽ được tự động tạo ra
-        setName: (state, action: PayloadAction<string>) => {
+        cacheSetName: (state, action: PayloadAction<string>) => {
             state.username = action.payload;
         },
-        setGmail: (state, action: PayloadAction<string>) => {
+        cacheSetGmail: (state, action: PayloadAction<string>) => {
             state.gmail = action.payload;
         },
-        setAvatarCode: (state, action: PayloadAction<string>) => {
+        cacheSetAvatarCode: (state, action: PayloadAction<string>) => {
             state.avartarCode = action.payload;
         },
-        setListFriend: (state, action: PayloadAction<string>) => {
+        cacheSetListFriend: (state, action: PayloadAction<string>) => {
             state.friends.list.push(action.payload);
         },
-        setFriendRequest: (state, action: PayloadAction<string>) => {
+        cacheSetFriendRequest: (state, action: PayloadAction<string>) => {
             state.requests.push(action.payload);
         },
-        setFullUserInformation: (state, action: PayloadAction<typeof initial_userInformation>) => {
-            return action.payload;
+        cacheSetFullUserInformation: (state, action: PayloadAction<typeof initial_userInformation | DocumentData | undefined>) => {
+            const payload = action.payload;
+
+            if (
+                !payload ||
+                typeof payload !== 'object' ||
+                Array.isArray(payload) ||
+                Object.values(payload).every(value => value === "" || (Array.isArray(value) && value.length === 0) || (typeof value === "object" && Object.keys(value).length === 0))
+            ) {
+                return state;
+            }
+
+
+            return payload as typeof initial_userInformation;
         },
     },
 })
 
 export const {
-    setName,
-    setGmail,
-    setAvatarCode,
-    setListFriend,
-    setFriendRequest,
-    setFullUserInformation,
+    cacheSetName,
+    cacheSetGmail,
+    cacheSetAvatarCode,
+    cacheSetListFriend,
+    cacheSetFriendRequest,
+    cacheSetFullUserInformation,
 } = userInformation.actions;
 
 export default userInformation.reducer
