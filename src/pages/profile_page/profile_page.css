@@ -158,7 +158,7 @@
     width: 50%;
     color: white;
     font-size: 14px;
-    background-color: #00FF00;
+    background-color: #01db01;
     align-self: center;
     padding: 12px;
     border: none;
@@ -166,8 +166,13 @@
     transition: all 0.2s;
 }
 
+.modal__button.signout {
+    background-color: #BD1B23;
+
+}
+
 .modal__button:hover {
-    background-color: #00e631;
+    filter: brightness(0.9);
 }
 
 /* .modal__theme-options {
@@ -198,6 +203,21 @@
 .modal__theme-button:hover {
     border-color: #00ff37;
 } */
+
+
+.modal__signout {
+    height: fit-content;
+    width: 100%;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    h1 {
+        user-select: none;
+        text-transform: uppercase;
+    }
+}
 
 .modal__delete {
     display: flex;

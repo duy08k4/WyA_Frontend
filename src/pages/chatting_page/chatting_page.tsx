@@ -6,8 +6,17 @@ import { useHistory } from "react-router";
 // Import components
 import Chatbox from "../../components/chatting__chatBox/Chatting_chatbox";
 
+// Import custom hook
+import { useToast } from "../../hooks/toastMessage/toast";
+import { useSpinner } from "../../hooks/spinner/spinner";
+
+// Import redux
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+
 // Import services
 import searchUser from "../../services/searchUser.serv";
+import { sendFriendRequest } from "../../services/friendRequest.serv";
 
 // Import interface
 import { interface__ChattingPage__user } from "../../types/interface__ChattingPage";
@@ -33,23 +42,35 @@ const ChattingPage: React.FC = () => {
 
   // Data
   const [searchInput, setSearchInput] = useState<string>("")
-  const [searchResult, setSearchResult] = useState([])
+  const [searchResult, setSearchResult] = useState<interface__ChattingPage__user[]>([])
 
-  // Handler Effects
+  // Redux
+  const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+
+  // Custom hook
+  const { addToast } = useToast()
+  const { openSpinner, closeSpinner } = useSpinner()
+
+  // Handler Effects ----------------------------------------------------------------------------------------------
   // Debounce
-  useEffect( () => {
+  useEffect(() => {
     if (searchInput != "") {
-      const debounce = setTimeout( async() => {
-        await searchUser(searchInput).then((res) => {
+      const debounce = setTimeout(async () => {
+        openSpinner()
+        await searchUser(searchInput, gmail).then((res) => {
+          closeSpinner()
           setSearchResult(res)
+          console.log(res)
         }).catch((err) => {
           console.log(err)
         })
       }, 1000)
-      
+
       return () => {
         clearTimeout(debounce)
       }
+    } else {
+      setSearchResult([])
     }
   }, [searchInput])
 
@@ -87,6 +108,29 @@ const ChattingPage: React.FC = () => {
     redirect.push("/")
   }
 
+  // Send request
+  const handleRequest = async (searchUserIndex: number) => {
+    const getTargetUser = searchResult[searchUserIndex]
+    const dataForSendRequest = {
+      senderGmail: gmail,
+      receiverGmail: getTargetUser.gmail,
+    }
+
+    await sendFriendRequest(dataForSendRequest).then((data) => {
+      if (data.status == 200) {
+        setSearchInput("")
+        setIsSearchActive(false)
+        addToast({
+          typeToast: "s",
+          content: data.data.mess,
+          duration: 3
+        })
+      } else {
+        console.warn(data)
+      }
+    }).catch((err) => {console.error(err)})
+  }
+
   return (
     <IonPage>
       {selectedFriend ? (
@@ -98,8 +142,8 @@ const ChattingPage: React.FC = () => {
         <div className="chat">
           {/* Header with search and profile */}
           <div className="chat__header">
-            <div className="chat__header__container">
-              <div className={`chat__search ${!isSearchActive ? "allBorder" : ""}`} ref={searchPopupRef}>
+            <div className="chat__header__container" ref={searchPopupRef}>
+              <div className={`chat__search ${!isSearchActive ? "allBorder" : ""}`}>
                 <button className="chat__button--back" onClick={handleDirection}>
                   <i className="fa-solid fa-caret-left chat__icon--back"></i>
                 </button>
@@ -127,7 +171,7 @@ const ChattingPage: React.FC = () => {
                             <p className="chat__name--usersearch">{user.username}</p>
                           </div>
 
-                          <button className="chat__button--request">Request</button>
+                          <button className="chat__button--request" onClick={() => { handleRequest(index) }}>Request</button>
                         </div>
                       )
                     })

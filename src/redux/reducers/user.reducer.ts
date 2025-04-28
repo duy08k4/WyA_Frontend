@@ -52,6 +52,9 @@ export const userInformation = createSlice({
 
             return payload as typeof initial_userInformation;
         },
+        cacheSetDefaultUserInformation: (state) => {
+            return {...initial_userInformation}
+        }
     },
 })
 
@@ -62,6 +65,7 @@ export const {
     cacheSetListFriend,
     cacheSetFriendRequest,
     cacheSetFullUserInformation,
+    cacheSetDefaultUserInformation,
 } = userInformation.actions;
 
 export default userInformation.reducer

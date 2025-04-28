@@ -5,18 +5,25 @@ import { useHistory } from "react-router";
 
 // Import components
 
+// Import custom hooks
+import { useCache } from "../../hooks/cache/cache";
+
 // Import css
 import "./profile_page.css"
 import "../../main.css"
+import logoutAccount from "../../services/logout_account";
 
 const ProfilePage: React.FC = () => {
     // States
-    const [activeModal, setActiveModal] = useState<'name' | 'email' | 'password' | 'delete' | 'signout' |null>(null);
+    const [activeModal, setActiveModal] = useState<'name' | 'email' | 'password' | 'delete' | 'avatar' | 'signout' | null>(null);
     const [newName, setNewName] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newEmail, setNewEmail] = useState("");
     const redirect = useHistory()
     const modalRef = useRef<HTMLDivElement>(null);
+
+    // Custom hooks
+    const { disableListener_userInformation } = useCache()
 
     // Handlers
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +40,7 @@ const ProfilePage: React.FC = () => {
 
     const handleDirection = () => {
         redirect.push("/")
-      }
+    }
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
@@ -60,19 +67,34 @@ const ProfilePage: React.FC = () => {
         setNewEmail("");
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         switch (activeModal) {
             case 'name':
                 console.log("New name:", newName);
                 console.log("Verification password:", newPassword);
                 break;
+
             case 'email':
                 console.log("New email:", newEmail);
                 console.log("Verification password:", newPassword);
                 break;
+
             case 'password':
                 console.log("New password:", newPassword);
                 break;
+
+            case 'avatar':
+                console.log("Changed avatar");
+                break;
+
+            case 'signout':
+                await logoutAccount().then((data) => {
+                    if (data.status == 200) {
+                        disableListener_userInformation()
+                        redirect.push("/login")
+                    }
+                })
+
             case 'delete':
                 console.log("Account deletion confirmed");
                 break;
@@ -172,21 +194,30 @@ const ProfilePage: React.FC = () => {
                     <div className="modal__delete">
                         <h2 className="modal__title">YOUR DECISION</h2>
                         <div className="modal__verify-code">
-                            <input type="text" placeholder="Verify code" className="modal__input modal__input--verify"/>
+                            <input type="text" placeholder="Verify code" className="modal__input modal__input--verify" />
                         </div>
 
                         <div className="modal__actions">
                             <button className="modal__button modal__button--sendCode">Send code</button>
-                            
+
                             <button className="modal__button modal__button--delete" onClick={handleSubmit}>Delete</button>
                         </div>
                     </div>
                 );
 
-                case 'signout':
-                    return (
-                        <></>
-                    );
+            case 'avatar':
+                return (
+                    <div className="modal__avatar">
+                        hahai
+                    </div>
+                );
+
+            case 'signout':
+                return (
+                    <div className="modal__signout">
+                        <h1>This is good bye</h1>
+                    </div>
+                );
 
             default:
                 return null;
@@ -220,12 +251,12 @@ const ProfilePage: React.FC = () => {
                         <p className="settings__item--text">Change your password</p>
                     </button>
 
-                    <button className="settings__item" >
+                    <button className="settings__item" onClick={() => setActiveModal("avatar")}>
                         <i className="fas fa-image settings__item--icon"></i>
                         <p className="settings__item--text">Change your avartar</p>
                     </button>
 
-                    <button className="settings__item">
+                    <button className="settings__item" onClick={() => setActiveModal("signout")}>
                         <i className="fas fa-sign-out-alt settings__item--icon"></i>
                         <p className="settings__item--text">Sign out</p>
                     </button>
@@ -241,9 +272,11 @@ const ProfilePage: React.FC = () => {
                     <div className="modal">
                         <div className="modal__content" ref={modalRef}>
                             {renderModalContent()}
-                            {/* Show Apply button only for non-delete modals */}
+
                             {activeModal !== 'delete' && (
-                                <button className="modal__button" onClick={handleSubmit}>Apply</button>
+                                <button className={`modal__button ${activeModal == 'signout' ? "signout" : ""}`} onClick={handleSubmit}>
+                                    {activeModal != 'signout' ? "Apply" : "Sign out"}
+                                </button>
                             )}
                         </div>
                     </div>

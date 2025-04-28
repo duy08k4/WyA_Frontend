@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 interface interface__toast {
-    typeToast: string | "s" | "e" | "i" | "w",
+    typeToast: "s" | "e" | "i" | "w",
     content: string,
     duration?: number,
     

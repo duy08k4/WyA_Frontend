@@ -39,12 +39,13 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
         if (subscribe_userInformation.current) {
             console.log("Started before")
             cacheSetData(cacheSetFullUserInformation(undefined))
+            return
         }
         
         subscribe_userInformation.current = onSnapshot(doc(db, "userInformation", btoa(gmail)), (doc) => {
             const data = doc.data()
             if (data) {
-                // console.log(doc.data())
+                console.log(doc.data())
                 cacheSetData(cacheSetFullUserInformation(data))
             } else {
                 cacheSetData(cacheSetFullUserInformation(undefined))

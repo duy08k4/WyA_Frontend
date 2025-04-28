@@ -1,7 +1,7 @@
 // Import interface
 
 // Service
-const searchUser = async (searchContent: string) => {
+const searchUser = async (searchContent: string, gmail: string) => {
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$/;
     const typeSearch =  gmailRegex.test(searchContent) ? "gmail" : "username"
 
@@ -11,6 +11,7 @@ const searchUser = async (searchContent: string) => {
         credentials: "include",
         body: JSON.stringify({
             data: {
+                gmail,
                 type: typeSearch,
                 searchContent: searchContent
             }

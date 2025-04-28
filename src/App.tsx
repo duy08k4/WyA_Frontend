@@ -36,7 +36,7 @@ import RegisterPage from './pages/register_page/register_page';
 import checkAccess from './services/checkAccess.serv';
 import { useEffect, useState } from 'react';
 import { useCache } from './hooks/cache/cache';
-import { cacheSetFriendRequest, cacheSetFullUserInformation, cacheSetGmail } from './redux/reducers/user.reducer';
+import { cacheSetDefaultUserInformation, cacheSetFriendRequest, cacheSetFullUserInformation, cacheSetGmail } from './redux/reducers/user.reducer';
 
 setupIonicReact();
 
@@ -47,24 +47,27 @@ const App: React.FC = () => {
   const { cacheSetData, enableListener_userInformation } = useCache()
 
   console.log(pageLocation.pathname)
-  // Check Login
 
+  // Check Login
   useEffect(() => {
     (async () => {
       await checkAccess().then(async (data) => {
-        if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
-          if (data.status == 200) {
-            const gmail = data.data.user.gmail
+        if (data.status == 200) {
+          const gmail = data.data.user.gmail
+
+          if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
             enableListener_userInformation(gmail)
             redirect.push("/")
+          } else {
+            enableListener_userInformation(gmail)
           }
         } else {
-          if (data.status != 200) {
+          if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
+            cacheSetData(cacheSetDefaultUserInformation())
+          } else {
+            cacheSetData(cacheSetDefaultUserInformation())
             redirect.push("/login")
           }
-
-          const gmail = data.data.user.gmail
-          enableListener_userInformation(gmail)
         }
       }).catch((err) => {
         console.log(err)

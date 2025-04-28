@@ -88,6 +88,8 @@ export default function LoginPage() {
                 closeSpinner()
                 if (res.status == 200) {
                     cacheSetData(cacheSetGmail(res.data.user.gmail))
+                    setGmail("")
+                    setPassword("")
                     redirect.push("/")
                 } else {
                     addToast({
