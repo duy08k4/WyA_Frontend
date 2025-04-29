@@ -37,16 +37,34 @@ import checkAccess from './services/checkAccess.serv';
 import { useEffect, useState } from 'react';
 import { useCache } from './hooks/cache/cache';
 import { cacheSetDefaultUserInformation, cacheSetFriendRequest, cacheSetFullUserInformation, cacheSetGmail } from './redux/reducers/user.reducer';
+import { App } from '@capacitor/app';
 
 setupIonicReact();
 
-const App: React.FC = () => {
+const AppPage: React.FC = () => {
   const [userData, setUserData] = useState<object>()
   const pageLocation = useLocation()
   const redirect = useHistory()
   const { cacheSetData, enableListener_userInformation } = useCache()
 
   console.log(pageLocation.pathname)
+
+  useEffect(() => {
+    const backButtonListener = App.addListener('backButton', () => {
+      // Nếu đang ở trang home, thoát ứng dụng
+      if (redirect.location.pathname === '/home') {
+        App.exitApp();
+      } else {
+        // Nếu không, quay lại trang trước
+        redirect.goBack();
+      }
+    });
+
+    // Cleanup listener khi component bị hủy
+    return () => {
+      backButtonListener.then((listener) => listener.remove());
+    };
+  }, [redirect]);
 
   // Check Login
   useEffect(() => {
@@ -97,4 +115,4 @@ const App: React.FC = () => {
   )
 };
 
-export default App;
+export default AppPage;

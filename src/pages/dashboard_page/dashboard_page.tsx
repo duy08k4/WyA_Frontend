@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 import "./dashboard_page.css"
 import "../../main.css"
 
+import mapIcon from "../../assets/dashboard_map_icon.png"
+
 const DashboardPage: React.FC = () => {
     // State
     const redirect = useHistory()
@@ -53,7 +55,7 @@ const DashboardPage: React.FC = () => {
 
                     <div className="dashboard__menu__listFuncs">
                         <div className="dashboard__menu__func dashboard__menu__func--map" onClick={() => handleDirection("map")}>
-                            <img src="src/assets/dashboard_map_icon.png" className="dashboard__menu__func--icon" alt="Icon function" />
+                            <img src={mapIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Map</p>
                         </div>
 
