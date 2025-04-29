@@ -23,17 +23,17 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
     applicationVariants.all { variant ->
         variant.outputs.all {
             def newName = "WyA.apk"
             outputFileName = newName
         }
-    }
-}
-
-repositories {
-    flatDir{
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }
 

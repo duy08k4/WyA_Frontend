@@ -13,7 +13,14 @@ import { useSelector } from "react-redux";
 import "./dashboard_page.css"
 import "../../main.css"
 
+// Import image
 import mapIcon from "../../assets/dashboard_map_icon.png"
+import chatIcon from '../../assets/dashboard_chat_icon.png'
+import todoIcon from '../../assets/dashboard_todo_icon.png'
+import aboutIcon from '../../assets/dashboard_aboutus_icon.png'
+import contactIcon from '../../assets/dashboard_contactus_icon.png'
+import profileIcon from '../../assets/dashboard_setting_icon.png'
+
 
 const DashboardPage: React.FC = () => {
     // State
@@ -60,27 +67,27 @@ const DashboardPage: React.FC = () => {
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--chat" onClick={() => handleDirection("chatting")}>
-                            <img src="src/assets/dashboard_chat_icon.png" className="dashboard__menu__func--icon" alt="Icon function" />
+                            <img src={chatIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Chat</p>
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--todo" onClick={() => handleDirection("todo")}>
-                            <img src="src/assets/dashboard_todo_icon.png" className="dashboard__menu__func--icon" alt="Icon function" />
+                            <img src={todoIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Todo</p>
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--about" onClick={() => handleDirection("about")}>
-                            <img src="src/assets/dashboard_aboutus_icon.png" className="dashboard__menu__func--icon" alt="Icon function" />
+                            <img src={aboutIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">About</p>
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--contact" onClick={() => handleDirection("contact")}>
-                            <img src="src/assets/dashboard_contactus_icon.png" className="dashboard__menu__func--icon" alt="Icon function" />
+                            <img src={contactIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Contact</p>
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--profile" onClick={() => handleDirection("profile")}>
-                            <img src="src/assets/dashboard_setting_icon.png" className="dashboard__menu__func--icon" alt="Icon function" />
+                            <img src={profileIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Profile</p>
                         </div>
 

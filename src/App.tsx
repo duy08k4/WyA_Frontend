@@ -38,6 +38,7 @@ import { useEffect, useState } from 'react';
 import { useCache } from './hooks/cache/cache';
 import { cacheSetDefaultUserInformation, cacheSetFriendRequest, cacheSetFullUserInformation, cacheSetGmail } from './redux/reducers/user.reducer';
 import { App } from '@capacitor/app';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 setupIonicReact();
 
@@ -48,6 +49,25 @@ const AppPage: React.FC = () => {
   const { cacheSetData, enableListener_userInformation } = useCache()
 
   console.log(pageLocation.pathname)
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        // Không cho status bar đè lên webview
+        await StatusBar.setOverlaysWebView({ overlay: false });
+
+        // (Tuỳ chọn) Đặt màu status bar cho phù hợp giao diện
+        await StatusBar.setBackgroundColor({ color: '#ffffff' });
+
+        // (Tuỳ chọn) Đặt style status bar
+        await StatusBar.setStyle({ style: Style.Dark });
+      } catch (err) {
+        console.error('StatusBar config failed', err);
+      }
+    };
+
+    init();
+  }, []);
 
   useEffect(() => {
     const backButtonListener = App.addListener('backButton', () => {

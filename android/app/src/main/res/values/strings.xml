@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">WyA</string>
-    <string name="title_activity_main">wyafrontend</string>
+    <string name="title_activity_main">WyA</string>
     <string name="package_name">ionic.wyafrontend</string>
     <string name="custom_url_scheme">ionic.wyafrontend</string>
 </resources>
