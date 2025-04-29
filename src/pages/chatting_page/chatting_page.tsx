@@ -19,7 +19,12 @@ import searchUser from "../../services/searchUser.serv";
 import { sendFriendRequest } from "../../services/friendRequest.serv";
 
 // Import interface
-import { interface__ChattingPage__user } from "../../types/interface__ChattingPage";
+import {
+  interface__ChattingPage__user,
+  interface__ChattingPage__requestConnection,
+  interface__ChattingPage__sentRequest,
+  interface__ChattingPage__friendRequest
+} from "../../types/interface__ChattingPage";
 
 // Import css
 import "./chatting_page.css"
@@ -43,9 +48,12 @@ const ChattingPage: React.FC = () => {
   // Data
   const [searchInput, setSearchInput] = useState<string>("")
   const [searchResult, setSearchResult] = useState<interface__ChattingPage__user[]>([])
+  const [requestConnection, setRequestConnection] = useState<interface__ChattingPage__requestConnection[]>([])
+  const [sentRequest, setSentRequest] = useState<interface__ChattingPage__sentRequest[]>([])
 
   // Redux
   const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+  const friendRequest = useSelector((state: RootState) => state.userInformation.requests)
 
   // Custom hook
   const { addToast } = useToast()
@@ -60,7 +68,6 @@ const ChattingPage: React.FC = () => {
         await searchUser(searchInput, gmail).then((res) => {
           closeSpinner()
           setSearchResult(res)
-          console.log(res)
         }).catch((err) => {
           console.log(err)
         })
@@ -94,9 +101,32 @@ const ChattingPage: React.FC = () => {
 
   }, [isSearchActive]);
 
+  // Filter friendRequest
+  useEffect(() => {
+    if (friendRequest.length != 0) {
+      const listRequestConection: interface__ChattingPage__requestConnection[] = []
+      const listSentRequest: interface__ChattingPage__sentRequest[] = []
+
+      friendRequest.forEach((request: interface__ChattingPage__requestConnection | interface__ChattingPage__sentRequest) => {
+        if (request.type == "receiver") {
+          listRequestConection.push(request)
+        } else {
+          listSentRequest.push(request)
+        }
+      })
+
+      setRequestConnection(listRequestConection)
+      setSentRequest(listSentRequest)
+    } else {
+      setRequestConnection([])
+      setSentRequest([])
+    }
+  }, [friendRequest])
+
   // Handlers
   const handleSearchClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    console.log(friendRequest)
     setIsSearchActive(true);
   };
 
@@ -128,7 +158,7 @@ const ChattingPage: React.FC = () => {
       } else {
         console.warn(data)
       }
-    }).catch((err) => {console.error(err)})
+    }).catch((err) => { console.error(err) })
   }
 
   return (
@@ -143,7 +173,7 @@ const ChattingPage: React.FC = () => {
           {/* Header with search and profile */}
           <div className="chat__header">
             <div className="chat__header__container" ref={searchPopupRef}>
-              <div className={`chat__search ${!isSearchActive ? "allBorder" : ""}`}>
+              <div className={`chat__search ${searchResult.length == 0 ? "allBorder" : ""}`}>
                 <button className="chat__button--back" onClick={handleDirection}>
                   <i className="fa-solid fa-caret-left chat__icon--back"></i>
                 </button>
@@ -182,36 +212,72 @@ const ChattingPage: React.FC = () => {
           </div>
 
           <div className="chat__content">
-            {/* Friend Requests Section */}
-            <div className="chat__section">
-              <h2 className="chat__title--section">Request (number)</h2>
-              <div className="chat__container">
-                <div className="chat__item--request">
-                  <div className="chat__user">
-                    <div className="chat__avatar--user">
-                      <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
-                    </div>
 
-                    <p className="chat__name--user">username</p>
-                  </div>
+            {requestConnection.length != 0 ? (
+              <div className="chat__section">
+                <h2 className="chat__title--section">Request connection</h2>
+                <div className="chat__container">
+                  {requestConnection.map((request: interface__ChattingPage__requestConnection, index) => {
+                    return (
+                      <div className="chat__item--request">
+                        <div className="chat__user">
+                          <div className="chat__avatar--user">
+                            <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                          </div>
 
-                  <div className="chat__actions">
+                          <p className="chat__name--user">{request.request_name}</p>
+                        </div>
 
-                    <button className="chat__button--decline" >
-                      <i className="fa-solid fa-xmark"></i>
-                    </button>
+                        <div className="chat__actions">
 
-                    <button className="chat__button--accept">
-                      <i className="fa-solid fa-check"></i>
-                    </button>
-                  </div>
+                          <button className="chat__button--decline" >
+                            <i className="fa-solid fa-xmark"></i>
+                          </button>
+
+                          <button className="chat__button--accept">
+                            <i className="fa-solid fa-check"></i>
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+
                 </div>
               </div>
-            </div>
+            ) : ""}
+
+            {sentRequest.length != 0 ? (
+              <div className="chat__section">
+                <h2 className="chat__title--section">Sent request</h2>
+                <div className="chat__container">
+                  {sentRequest.map((request: interface__ChattingPage__sentRequest, index) => {
+                    return (
+                      <div key={index} className="chat__item--request">
+                        <div className="chat__user">
+                          <div className="chat__avatar--user">
+                            <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                          </div>
+
+                          <p className="chat__name--user">{request.request_name}</p>
+                        </div>
+
+                        <div className="chat__actions">
+                          <button className="chat__button--revokeInvitation" >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                </div>
+              </div>
+            ) : ""}
+
 
             {/* Friends List Section */}
             <div className="chat__section">
-              <h2 className="chat__title--section">Friends (number)</h2>
+              <h2 className="chat__title--section">Connection (number)</h2>
               <div className="chat__container">
                 <div
                   className="chat__item--friend"

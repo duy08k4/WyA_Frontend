@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DocumentData } from "firebase/firestore";
 
+// Import interface
+import { interface__ChattingPage__friendRequest } from "../../types/interface__ChattingPage";
+
 // Define initial values
 const initial_userInformation = {
     username: "",
@@ -11,7 +14,7 @@ const initial_userInformation = {
         status: "public",
         list: [] as string[]
     },
-    requests: [] as string[],
+    requests: [] as interface__ChattingPage__friendRequest[],
     setting: {},
     profileStatus: ""
 }
@@ -34,7 +37,7 @@ export const userInformation = createSlice({
         cacheSetListFriend: (state, action: PayloadAction<string>) => {
             state.friends.list.push(action.payload);
         },
-        cacheSetFriendRequest: (state, action: PayloadAction<string>) => {
+        cacheSetFriendRequest: (state, action: PayloadAction<interface__ChattingPage__friendRequest>) => {
             state.requests.push(action.payload);
         },
         cacheSetFullUserInformation: (state, action: PayloadAction<typeof initial_userInformation | DocumentData | undefined>) => {
