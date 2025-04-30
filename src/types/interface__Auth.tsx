@@ -7,21 +7,18 @@ interface interface__authContext {
 }
 
 interface interface__authProviderProps {
-    children: ReactNode;
+    children: ReactNode,
 }
 
 interface interface__userInformation {
-    username: string;
-    gmail: string;
-    uuid: string;
-    avartarCode: string;
-    friends: {
-        status: string;
-        list: string[] | string;
-    };
-    requests: string[] | string;
-    setting: {} | string; // hoặc cụ thể hơn nếu có
-    profileStatus: string;
+    username: string,
+    gmail: string,
+    uuid: string,
+    avartarCode: string,
+    friends: string[] | string,
+    requests: string[] | string,
+    setting: {} | string, // hoặc cụ thể hơn nếu có
+    profileStatus: string
 }
 
 export type { interface__authContext, interface__authProviderProps, interface__userInformation }

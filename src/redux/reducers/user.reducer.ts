@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DocumentData } from "firebase/firestore";
 
 // Import interface
-import { interface__ChattingPage__friendRequest } from "../../types/interface__ChattingPage";
+import { interface__ChattingPage__connections, interface__ChattingPage__friendRequest } from "../../types/interface__ChattingPage";
 
 // Define initial values
 const initial_userInformation = {
@@ -10,10 +10,7 @@ const initial_userInformation = {
     gmail: "",
     uuid: "",
     avartarCode: "",
-    friends: {
-        status: "public",
-        list: [] as string[]
-    },
+    friends: [] as interface__ChattingPage__connections[],
     requests: [] as interface__ChattingPage__friendRequest[],
     setting: {},
     profileStatus: ""
@@ -34,8 +31,8 @@ export const userInformation = createSlice({
         cacheSetAvatarCode: (state, action: PayloadAction<string>) => {
             state.avartarCode = action.payload;
         },
-        cacheSetListFriend: (state, action: PayloadAction<string>) => {
-            state.friends.list.push(action.payload);
+        cacheSetListFriend: (state, action: PayloadAction<interface__ChattingPage__connections>) => {
+            state.friends.push(action.payload);
         },
         cacheSetFriendRequest: (state, action: PayloadAction<interface__ChattingPage__friendRequest>) => {
             state.requests.push(action.payload);

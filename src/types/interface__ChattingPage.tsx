@@ -26,7 +26,10 @@ interface interface__ChattingPage__sentRequest {
 }
 
 interface interface__ChattingPage__connections {
-
+    gmail: string,
+    username: string,
+    avartarCode: string,
+    chatCode: string
 }
 
 export type { 

@@ -286,21 +286,65 @@
     font-weight: normal;
 }
 
-.chat__message--container {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.chat__message--label {
+.chat__item--friend--delete {
+    background: transparent;
+    color: red;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: bold;
-    color: #808080;
-    font-size: 10px;
 }
 
-.chat__message--text {
-    color: rgba(128, 128, 128, 0.5);
-    font-size: 10px;
+.chatConfirm {
+    position: fixed;
+    z-index: 100;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chatConfirm__form {
+    height: fit-content;
+    width: 90%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px;
+    padding: 20px 40px;
+}
+
+.chatConfirm__form--des {
+    font-size: 12px;
+    color: #BD1B23;
+}
+
+.chatConfirm__form__choiceContainer {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+
+    .chatConfirm__form__btn {
+        height: fit-content;
+        width: fit-content;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 10px 40px;
+        border-radius: 10px;
+    }
+}
+
+.chatConfirm__form__Acceptbtn {
+    background-color: #BD1B23;
+}
+
+.chatConfirm__form__Cancelbtn {
+    background-color: gray;
 }

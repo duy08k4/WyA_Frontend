@@ -4,10 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 
 // Import components
-import NoteEditor from "../../components/note__notesEditor/Note_editors";
 
 // Import css
-import "./notes_page.css"
+import "./chat_page.css"
 import "../../main.css"
 
 const NotesPage: React.FC = () => {
@@ -29,10 +28,6 @@ const NotesPage: React.FC = () => {
     setIsEditorOpen(true);
   }
 
-  const handleBackClick = () => {
-    setIsEditorOpen(false);
-  }
-
   const handleDirection = () => {
     redirect.push("/")
   }
@@ -41,8 +36,6 @@ const NotesPage: React.FC = () => {
     <IonPage>
         {/* Header Container */}
         <div className="notes__container">
-        {isEditorOpen && (<NoteEditor onBack={handleBackClick}/>)}
-
           <div className="notes__header">
             <button className="notes__button--back" onClick={handleDirection}>
               <i className="fa-solid fa-caret-left"></i>
