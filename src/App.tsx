@@ -92,11 +92,10 @@ const AppPage: React.FC = () => {
           const gmail = data.data.user.gmail
 
           if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
-            enableListener_userInformation(gmail)
             redirect.push("/")
-          } else {
-            enableListener_userInformation(gmail)
           }
+          
+          enableListener_userInformation(gmail)
         } else {
           if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
             cacheSetData(cacheSetDefaultUserInformation())

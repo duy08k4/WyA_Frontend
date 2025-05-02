@@ -93,6 +93,7 @@
 }
 
 .dashboard__menu__func {
+    position: relative;
     width: 130px;
     aspect-ratio: 1/1;
     background-color: white;
@@ -107,4 +108,22 @@
     img {
         width: 70%;
     }
+}
+
+.dashboard__menu__func--amount {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 10px;
+    transform: translate(-50%, -25%);
+    color: white;
+    font-size: 14px;
+    font-weight: bolder;
+    background-color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    border-radius: 50%;
 }

@@ -12,7 +12,7 @@
 }
 
 .toast {
-    height: 50px;
+    height: 60px;
     width: 80%;
     transform: translateX(-115%);
     background-color: #3e3f46;
@@ -55,12 +55,14 @@
 .toast__messsageBox {
     height: 100%;
     width: 100%;
-    font-size: 12px;
-    color: white;
-    /* font-weight: bold; */
-
     display: flex;
     align-items: center;
+}
+
+.toast__messsageBox--showMessage {
+    font-size: 14px;
+    color: white;
+    font-weight: lighter;
 }
 
 @keyframes showToastt {

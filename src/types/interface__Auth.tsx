@@ -2,8 +2,17 @@ import { ReactNode } from "react";
 
 interface interface__authContext {
     cacheSetData: (param: any) => void,
+
+    //Listener
     enableListener_userInformation: (gmail: string) => void,
-    disableListener_userInformation: () => void
+    enableListener_userChat_getMessage: () => void,
+    enableListener_userChat_getNewMessage: () => void,
+    enableListener_userChat_amountNewMessage: () => void,
+    
+    //Listener
+    disableListener_userInformation: () => void,
+    disableListener_userChat_getMessage: () => void,
+    disableListener_userChat_getNewMessage: () => void
 }
 
 interface interface__authProviderProps {

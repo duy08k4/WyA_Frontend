@@ -25,12 +25,12 @@ import {
 
 // Import interface
 import {
-  interface__ChattingPage__user,
-  interface__ChattingPage__requestConnection,
-  interface__ChattingPage__sentRequest,
-  interface__ChattingPage__friendRequest,
-  interface__ChattingPage__connections
-} from "../../types/interface__ChattingPage";
+  interface__FriendPage__user,
+  interface__FriendPage__requestConnection,
+  interface__FriendPage__sentRequest,
+  interface__FriendPage__friendRequest,
+  interface__FriendPage__connections
+} from "../../types/interface__FriendPage";
 
 // Import css
 import "./friend_page.css"
@@ -46,11 +46,11 @@ const ChattingPage: React.FC = () => {
 
   // Data
   const [searchInput, setSearchInput] = useState<string>("")
-  const [searchResult, setSearchResult] = useState<interface__ChattingPage__user[]>([])
-  const [requestConnection, setRequestConnection] = useState<interface__ChattingPage__requestConnection[]>([])
-  const [sentRequest, setSentRequest] = useState<interface__ChattingPage__sentRequest[]>([])
-  const [friendList, setFriendList] = useState<interface__ChattingPage__connections[]>([])
-  const [friendDelete, setFriendDelete] = useState<interface__ChattingPage__connections | undefined>(undefined)
+  const [searchResult, setSearchResult] = useState<interface__FriendPage__user[]>([])
+  const [requestConnection, setRequestConnection] = useState<interface__FriendPage__requestConnection[]>([])
+  const [sentRequest, setSentRequest] = useState<interface__FriendPage__sentRequest[]>([])
+  const [friendList, setFriendList] = useState<interface__FriendPage__connections[]>([])
+  const [friendDelete, setFriendDelete] = useState<interface__FriendPage__connections | undefined>(undefined)
 
   // Redux
   const gmail = useSelector((state: RootState) => state.userInformation.gmail)
@@ -71,6 +71,7 @@ const ChattingPage: React.FC = () => {
         openSpinner()
         await searchUser(searchInput, gmail).then((res) => {
           closeSpinner()
+          console.log(res)
           setSearchResult(res)
         }).catch((err) => {
           console.log(err)
@@ -108,10 +109,10 @@ const ChattingPage: React.FC = () => {
   // Filter friendRequest
   useEffect(() => {
     if (friendRequest.length != 0) {
-      const listRequestConection: interface__ChattingPage__requestConnection[] = []
-      const listSentRequest: interface__ChattingPage__sentRequest[] = []
+      const listRequestConection: interface__FriendPage__requestConnection[] = []
+      const listSentRequest: interface__FriendPage__sentRequest[] = []
 
-      friendRequest.forEach((request: interface__ChattingPage__requestConnection | interface__ChattingPage__sentRequest) => {
+      friendRequest.forEach((request: interface__FriendPage__requestConnection | interface__FriendPage__sentRequest) => {
         if (request.type == "receiver") {
           listRequestConection.push(request)
         } else {
@@ -222,18 +223,18 @@ const ChattingPage: React.FC = () => {
       gmail,
       username,
       avartarCode,
-      chatCode: (friendDelete as interface__ChattingPage__connections).chatCode
+      chatCode: (friendDelete as interface__FriendPage__connections).chatCode
     }
 
     await removeFriend({
       client: clientData,
-      friend: (friendData as interface__ChattingPage__connections)
+      friend: (friendData as interface__FriendPage__connections)
     }).then((data) => {
       console.log(data)
       setFriendDelete(undefined)
       addToast({
         typeToast: "s",
-        content: `Removed ${(friendDelete as interface__ChattingPage__connections).username}`,
+        content: `Removed ${(friendDelete as interface__FriendPage__connections).username}`,
         duration: 3
       })
     }).catch((err) => { console.error(err) })
@@ -246,39 +247,39 @@ const ChattingPage: React.FC = () => {
 
   return (
     <IonPage>
-      <div className="chat">
+      <div className="friend">
         {/* Header with search and profile */}
-        <div className="chat__header">
-          <div className="chat__header__container" ref={searchPopupRef}>
-            <div className={`chat__search ${searchResult.length == 0 ? "allBorder" : ""}`}>
-              <button className="chat__button--back" onClick={handleDirection}>
-                <i className="fa-solid fa-caret-left chat__icon--back"></i>
+        <div className="friend__header">
+          <div className="friend__header__container" ref={searchPopupRef}>
+            <div className={`friend__search ${searchResult.length == 0 ? "allBorder" : ""}`}>
+              <button className="friend__button--back" onClick={handleDirection}>
+                <i className="fa-solid fa-caret-left friend__icon--back"></i>
               </button>
 
-              <div className="chat__input--search">
+              <div className="friend__input--search">
                 <input type="text" placeholder="Find your connection..." onClick={handleSearchClick} onChange={(e) => setSearchInput(e.target.value)} value={searchInput} />
               </div>
 
-              <div className="chat__avatar--profile">
+              <div className="friend__avatar--profile">
                 <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
               </div>
             </div>
 
             {isSearchActive && (
-              <div className="chat__search--history">
+              <div className="friend__search--history">
                 {searchResult.length == 0 ? "" : (
-                  searchResult.map((user: interface__ChattingPage__user, index) => {
+                  searchResult.map((user: interface__FriendPage__user, index) => {
                     return (
-                      <div key={index} className="chat__search--item">
-                        <div className="chat__search--user">
-                          <div className="chat__search--userAvartar">
+                      <div key={index} className="friend__search--item">
+                        <div className="friend__search--user">
+                          <div className="friend__search--userAvartar">
                             <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
                           </div>
 
-                          <p className="chat__name--usersearch">{user.username}</p>
+                          <p className="friend__name--usersearch">{user.username}</p>
                         </div>
 
-                        <button className="chat__button--request" onClick={() => { handleRequest(index) }}>Request</button>
+                        <button className="friend__button--request" onClick={() => { handleRequest(index) }}>Request</button>
                       </div>
                     )
                   })
@@ -288,30 +289,30 @@ const ChattingPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="chat__content">
+        <div className="friend__content">
 
           {requestConnection.length != 0 ? (
-            <div className="chat__section">
-              <h2 className="chat__title--section">Request connection</h2>
-              <div className="chat__container">
-                {requestConnection.map((request: interface__ChattingPage__requestConnection, index) => {
+            <div className="friend__section">
+              <h2 className="friend__title--section">Request connection</h2>
+              <div className="friend__container">
+                {requestConnection.map((request: interface__FriendPage__requestConnection, index) => {
                   return (
-                    <div key={index} className="chat__item--request">
-                      <div className="chat__user">
-                        <div className="chat__avatar--user">
+                    <div key={index} className="friend__item--request">
+                      <div className="friend__user">
+                        <div className="friend__avatar--user">
                           <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
                         </div>
 
-                        <p className="chat__name--user">{request.request_name}</p>
+                        <p className="friend__name--user">{request.request_name}</p>
                       </div>
 
-                      <div className="chat__actions">
+                      <div className="friend__actions">
 
-                        <button className="chat__button--decline" onClick={() => { handleCancelRequest(index) }} >
+                        <button className="friend__button--decline" onClick={() => { handleCancelRequest(index) }} >
                           <i className="fa-solid fa-xmark"></i>
                         </button>
 
-                        <button className="chat__button--accept" onClick={() => { handleAcceptRequest(index) }}>
+                        <button className="friend__button--accept" onClick={() => { handleAcceptRequest(index) }}>
                           <i className="fa-solid fa-check"></i>
                         </button>
                       </div>
@@ -324,22 +325,22 @@ const ChattingPage: React.FC = () => {
           ) : ""}
 
           {sentRequest.length != 0 ? (
-            <div className="chat__section">
-              <h2 className="chat__title--section">Sent request</h2>
-              <div className="chat__container">
-                {sentRequest.map((request: interface__ChattingPage__sentRequest, index) => {
+            <div className="friend__section">
+              <h2 className="friend__title--section">Sent request</h2>
+              <div className="friend__container">
+                {sentRequest.map((request: interface__FriendPage__sentRequest, index) => {
                   return (
-                    <div key={index} className="chat__item--request">
-                      <div className="chat__user">
-                        <div className="chat__avatar--user">
+                    <div key={index} className="friend__item--request">
+                      <div className="friend__user">
+                        <div className="friend__avatar--user">
                           <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
                         </div>
 
-                        <p className="chat__name--user">{request.request_name}</p>
+                        <p className="friend__name--user">{request.request_name}</p>
                       </div>
 
-                      <div className="chat__actions">
-                        <button className="chat__button--revokeInvitation" onClick={() => { handleRevokeInvitation(index) }} >
+                      <div className="friend__actions">
+                        <button className="friend__button--revokeInvitation" onClick={() => { handleRevokeInvitation(index) }} >
                           <i className="fas fa-trash"></i>
                         </button>
                       </div>
@@ -353,23 +354,23 @@ const ChattingPage: React.FC = () => {
 
 
           {/* Friends List Section */}
-          <div className="chat__section">
-            <h2 className="chat__title--section">Connection ({friendList.length})</h2>
-            <div className="chat__container">
-              {friendList.map((friend: interface__ChattingPage__connections, index) => {
+          <div className="friend__section">
+            <h2 className="friend__title--section">Connection ({friendList.length})</h2>
+            <div className="friend__container">
+              {friendList.map((friend: interface__FriendPage__connections, index) => {
                 return (
-                  <div key={index} className="chat__item--friend">
-                    <div className="chat__user">
-                      <div className="chat__avatar--user">
+                  <div key={index} className="friend__item--friend">
+                    <div className="friend__user">
+                      <div className="friend__avatar--user">
                         <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="User avatar" />
                       </div>
 
-                      <div className="chat__info--user">
-                        <p className="chat__name--user">{friend.username}</p>
+                      <div className="friend__info--user">
+                        <p className="friend__name--user">{friend.username}</p>
                       </div>
                     </div>
 
-                    <button className="chat__item--friend--delete" onClick={() => { handleDeleteFriend(index) }}>Disconnect</button>
+                    <button className="friend__item--friend--delete" onClick={() => { handleDeleteFriend(index) }}>Disconnect</button>
                   </div>
                 )
               })}
@@ -379,14 +380,14 @@ const ChattingPage: React.FC = () => {
         </div>
 
         {!friendDelete ? "" : (
-          <div className="chatConfirm">
-            <div className="chatConfirm__form">
-              <h4 className="chatConfirm__form--title">Do you want to continue?</h4>
-              <p className="chatConfirm__form--des">Remove <b>{friendDelete.username}</b></p>
+          <div className="friendConfirm">
+            <div className="friendConfirm__form">
+              <h4 className="friendConfirm__form--title">Do you want to continue?</h4>
+              <p className="friendConfirm__form--des">Remove <b>{friendDelete.username}</b></p>
 
-              <div className="chatConfirm__form__choiceContainer">
-                <button className="chatConfirm__form__btn chatConfirm__form__Cancelbtn" onClick={confirmForm_decline}>No</button>
-                <button className="chatConfirm__form__btn chatConfirm__form__Acceptbtn" onClick={confirmForm_accept}>Yes</button>
+              <div className="friendConfirm__form__choiceContainer">
+                <button className="friendConfirm__form__btn chatConfirm__form__Cancelbtn" onClick={confirmForm_decline}>No</button>
+                <button className="friendConfirm__form__btn chatConfirm__form__Acceptbtn" onClick={confirmForm_accept}>Yes</button>
               </div>
             </div>
           </div>

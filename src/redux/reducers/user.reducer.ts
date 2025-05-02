@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DocumentData } from "firebase/firestore";
 
 // Import interface
-import { interface__ChattingPage__connections, interface__ChattingPage__friendRequest } from "../../types/interface__ChattingPage";
+import { interface__FriendPage__connections, interface__FriendPage__friendRequest } from "../../types/interface__FriendPage";
 
 // Define initial values
 const initial_userInformation = {
@@ -10,9 +10,11 @@ const initial_userInformation = {
     gmail: "",
     uuid: "",
     avartarCode: "",
-    friends: [] as interface__ChattingPage__connections[],
-    requests: [] as interface__ChattingPage__friendRequest[],
+    friends: [] as interface__FriendPage__connections[],
+    requests: [] as interface__FriendPage__friendRequest[],
     setting: {},
+    listChatCode: [],
+    lastMessage: {},
     profileStatus: ""
 }
 
@@ -31,10 +33,10 @@ export const userInformation = createSlice({
         cacheSetAvatarCode: (state, action: PayloadAction<string>) => {
             state.avartarCode = action.payload;
         },
-        cacheSetListFriend: (state, action: PayloadAction<interface__ChattingPage__connections>) => {
+        cacheSetListFriend: (state, action: PayloadAction<interface__FriendPage__connections>) => {
             state.friends.push(action.payload);
         },
-        cacheSetFriendRequest: (state, action: PayloadAction<interface__ChattingPage__friendRequest>) => {
+        cacheSetFriendRequest: (state, action: PayloadAction<interface__FriendPage__friendRequest>) => {
             state.requests.push(action.payload);
         },
         cacheSetFullUserInformation: (state, action: PayloadAction<typeof initial_userInformation | DocumentData | undefined>) => {

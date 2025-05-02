@@ -3,8 +3,7 @@ import { ReactNode } from "react";
 interface interface__toast {
     typeToast: "s" | "e" | "i" | "w",
     content: string,
-    duration?: number,
-    
+    duration?: number
 }
 
 interface interface__toastContext {

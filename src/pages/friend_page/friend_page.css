@@ -6,7 +6,7 @@
     --border-color: rgba(255, 255, 255, 0.1);
 }
 
-.chat {
+.friend {
     position: relative;
     height: 100%;
     display: flex;
@@ -14,7 +14,7 @@
     background-color: var(--primary-color);
 }
 
-.chat__header {
+.friend__header {
     position: absolute;
     top: 16px;
     left: 50%;
@@ -28,13 +28,13 @@
     padding: 0 16px;
 }
 
-.chat__header__container {
+.friend__header__container {
     position: relative;
     height: 100%;
     width: 100%;
 }
 
-.chat__search {
+.friend__search {
     height: 100%;
     flex: 1;
     display: flex;
@@ -47,11 +47,11 @@
     box-shadow: 0 0 10px rgba(128, 128, 128, 0.25);
 }
 
-.chat__search.allBorder {
+.friend__search.allBorder {
     border-radius: 20px;
 }
 
-.chat__button--back {
+.friend__button--back {
     height: fit-content;
     width: fit-content;
     display: flex;
@@ -62,19 +62,19 @@
     border: none;
 }
 
-.chat__icon--back {
+.friend__icon--back {
     color: white;
     font-size: 20px;
 }
 
-.chat__input--search {
+.friend__input--search {
     height: 100%;
     flex: 1;
     font-size: 12px;
     color: white;
 }
 
-.chat__input--search input {
+.friend__input--search input {
     width: 100%;
     height: 100%;
     font-size: 12px;
@@ -85,11 +85,11 @@
     outline: none;
 }
 
-.chat__input--search::placeholder {
+.friend__input--search::placeholder {
     color: rgba(255, 255, 255, 0.8);
 }
 
-.chat__avatar--profile {
+.friend__avatar--profile {
     height: 80%;
     aspect-ratio: 1/1;
     overflow: hidden;
@@ -99,12 +99,12 @@
     flex-shrink: 0;
 }
 
-.chat__avatar--profile img {
+.friend__avatar--profile img {
     width: 100%;
     height: 100%;
 }
 
-.chat__content {
+.friend__content {
     flex: 1;
     height: 100%;
     padding: 80px 16px 16px 16px;
@@ -112,18 +112,18 @@
     background-color: var(--primary-color);
 }
 
-.chat__section {
+.friend__section {
     margin-bottom: 24px;
 }
 
-.chat__title--section {
+.friend__title--section {
     font-size: 16px;
     margin-bottom: 12px;
     font-weight: bold;
     color: #000;
 }
 
-.chat__container {
+.friend__container {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -131,15 +131,15 @@
     background-color: var(--primary-color);
 }
 
-.chat__list--request,
-.chat__list--friends {
+.friend__list--request,
+.friend__list--friends {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.chat__item--request,
-.chat__item--friend {
+.friend__item--request,
+.friend__item--friend {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -149,13 +149,13 @@
     box-shadow: 0 0 10px var(--shadow-color);
 }
 
-.chat__user {
+.friend__user {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.chat__avatar--user {
+.friend__avatar--user {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -163,35 +163,35 @@
     background-color: var(--primary-color);
 }
 
-.chat__avatar--user img {
+.friend__avatar--user img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.chat__info--user {
+.friend__info--user {
     display: flex;
     flex-direction: column;
 }
 
-.chat__name--user {
+.friend__name--user {
     font-size: 16px;
     color: black;
 }
 
-.chat__message--last {
+.friend__message--last {
     color: #666;
     font-size: 12px;
 }
 
-.chat__actions {
+.friend__actions {
     display: flex;
     gap: 12px;
 }
 
-.chat__button--decline,
-.chat__button--accept {
+.friend__button--decline,
+.friend__button--accept {
     width: 24px;
     height: 24px;
     background-color: transparent;
@@ -202,20 +202,20 @@
     padding: 20px;
 }
 
-.chat__button--decline i {
+.friend__button--decline i {
     font-size: 20px;
     font-weight: bold;
     color: #BD1B23;
     background-color: transparent;
 }
 
-.chat__button--accept i {
+.friend__button--accept i {
     color: #00FF00;
     font-size: 20px;
     font-weight: bold;
 }
 
-.chat__button--revokeInvitation {
+.friend__button--revokeInvitation {
     width: 24px;
     height: 24px;
     color: black;
@@ -229,7 +229,7 @@
     border: none;
 }
 
-.chat__search--history {
+.friend__search--history {
     position: absolute;
     top: 100%;
     left: 50%;
@@ -240,24 +240,24 @@
     border-radius: 0 0 20px 20px;
 }
 
-.chat__search--item {
+.friend__search--item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 25px 12px;
 }
 
-.chat__search--item:last-child {
+.friend__search--item:last-child {
     border-bottom: none;
 }
 
-.chat__search--user {
+.friend__search--user {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.chat__search--userAvartar {
+.friend__search--userAvartar {
     overflow: hidden;
     width: 35px;
     aspect-ratio: 1/1;
@@ -265,18 +265,18 @@
     border-radius: 50%;
 }
 
-.chat__search--userAvartar img {
+.friend__search--userAvartar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.chat__name--usersearch {
+.friend__name--usersearch {
     color: white;
     font-size: 14px;
 }
 
-.chat__button--request {
+.friend__button--request {
     background: var(--primary-color);
     color: black;
     border: none;
@@ -286,7 +286,7 @@
     font-weight: normal;
 }
 
-.chat__item--friend--delete {
+.friend__item--friend--delete {
     background: transparent;
     color: red;
     border: none;
@@ -296,7 +296,7 @@
     font-weight: bold;
 }
 
-.chatConfirm {
+.friendConfirm {
     position: fixed;
     z-index: 100;
     height: 100%;
@@ -307,7 +307,7 @@
     align-items: center;
 }
 
-.chatConfirm__form {
+.friendConfirm__form {
     height: fit-content;
     width: 90%;
     background-color: white;
@@ -318,12 +318,12 @@
     padding: 20px 40px;
 }
 
-.chatConfirm__form--des {
+.friendConfirm__form--des {
     font-size: 12px;
     color: #BD1B23;
 }
 
-.chatConfirm__form__choiceContainer {
+.friendConfirm__form__choiceContainer {
     height: fit-content;
     width: 100%;
     display: flex;
@@ -331,7 +331,7 @@
     align-items: center;
     margin-top: 30px;
 
-    .chatConfirm__form__btn {
+    .friendConfirm__form__btn {
         height: fit-content;
         width: fit-content;
         font-size: 14px;
@@ -341,10 +341,10 @@
     }
 }
 
-.chatConfirm__form__Acceptbtn {
+.friendConfirm__form__Acceptbtn {
     background-color: #BD1B23;
 }
 
-.chatConfirm__form__Cancelbtn {
+.friendConfirm__form__Cancelbtn {
     background-color: gray;
 }

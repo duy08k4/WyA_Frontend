@@ -20,23 +20,34 @@ import chatIcon from '../../assets/dashboard_chat_icon.png'
 import aboutIcon from '../../assets/dashboard_aboutus_icon.png'
 import contactIcon from '../../assets/dashboard_contactus_icon.png'
 import profileIcon from '../../assets/dashboard_setting_icon.png'
+import { useCache } from "../../hooks/cache/cache";
 
 
 const DashboardPage: React.FC = () => {
     // State
+    const [isNewMessage, setIsNewMessage] = useState<boolean>(false)
     const redirect = useHistory()
 
-    // Error
+    // Custom hook
+    const { cacheSetData } = useCache()
 
-    // Data
+    // Redux
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
     const username = useSelector((state: RootState) => state.userInformation.username)
-    const all = useSelector((state: RootState) => state.userInformation)
-    
+    const amountNewChat = useSelector((state: RootState) => state.userChat.amountNewChat)
+
     // Handlers
     const handleDirection = (endtryPoint: string) => {
         redirect.push(`/${endtryPoint}`)
     }
+
+    useEffect(() => {
+        let amount = Object.values(amountNewChat)
+            .filter(item => item.amountNewMessage !== 0)     // lọc theo điều kiện
+            .reduce((acc, item) => acc + item.amountNewMessage, 0);
+
+        setIsNewMessage(amount == 0 ? false : true)
+    }, [amountNewChat])
 
     return (
         <IonPage>
@@ -72,8 +83,12 @@ const DashboardPage: React.FC = () => {
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--todo" onClick={() => handleDirection("chat")}>
+                            {!isNewMessage ? "" : (
+                                <p className="dashboard__menu__func--amount">!</p>
+                            )}
+
                             <img src={chatIcon} className="dashboard__chat__func--icon" alt="Icon function" />
-                            <p className="dashboard__menu__func--title">Chat</p>
+                            <p className="dashboard__menu__func--title">Message</p>
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--about" onClick={() => handleDirection("about")}>
