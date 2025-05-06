@@ -1,16 +1,26 @@
+// Import libraries
 import React, { createContext, useContext, useEffect, useRef } from "react"
+
+// Import interface
 import {
     interface__authContext,
     interface__authProviderProps,
     interface__userInformation
 } from "../../types/interface__Auth"
+
+// Import Redux
+import { cacheSetDefaultChat, cacheSetDefaultMessages, cacheSetDefaultNewMessages, cacheSetLastMessages, cacheSetMessages, cacheSetNewMessages, cacheSetNewMessages_sender, cacheSetRequestRemove, cacheUpdateAmountNewChat } from "../../redux/reducers/chat.reducer"
+import { cacheSetFullUserInformation } from "../../redux/reducers/user.reducer"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../../redux/store"
-import { collection, doc, DocumentData, getDoc, getDocs, onSnapshot } from "firebase/firestore"
+
+// Import firebase
+import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore"
 import { db } from "../../config/firebaseSDK"
-import { cacheSetFullUserInformation } from "../../redux/reducers/user.reducer"
-import { cacheSetDefaultChat, cacheSetDefaultMessages, cacheSetDefaultNewMessages, cacheSetLastMessages, cacheSetMessages, cacheSetNewMessages, cacheSetNewMessages_sender, cacheSetRequestRemove, cacheUpdateAmountNewChat } from "../../redux/reducers/chat.reducer"
+
+// Import services
 import { meregMessage } from "../../services/sendMessage.serv"
+import { cacheSetUserLocation_listUserOnline } from "../../redux/reducers/userLocation.reducer"
 
 const CacheContext = createContext<interface__authContext | undefined>(undefined)
 
@@ -37,6 +47,10 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
     const subscribe_userChat_message = useRef<(() => void) | undefined>(undefined);
     const subscribe_userChat_newMessage = useRef<(() => void) | undefined>(undefined);
     const subscribe_userChat_amountNewMessage = useRef<(() => void) | undefined>(undefined);
+    
+    const subscribe_userLocation_listUserOnline = useRef<(() => void) | undefined>(undefined);
+
+    // Custom hook
 
     // Function: Set data for Redux
     const cacheSetData = (param: any) => {
@@ -45,7 +59,6 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
 
     // Handler
     useEffect(() => {
-        console.log(chatCode == "" ? true : false)
         if (chatCode == "") {
             disableListener_userChat_getNewMessage()
             disableListener_userChat_getMessage()
@@ -54,6 +67,15 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
             enableListener_userChat_getNewMessage()
         }
     }, [chatCode])
+
+    useEffect(() => {
+        console.log("gmail day: ", gmail)
+        if (gmail == "") {
+            disableListener_userLocation_listUserOnline()
+        } else {
+            enableListener_userLocation_listUserOnline(gmail)
+        }
+    }, [gmail])
 
     // Listener
     const enableListener_userInformation = (gmailInput: string) => { //Get userInformation
@@ -88,8 +110,7 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
 
         subscribe_userChat_message.current = onSnapshot(doc(db, "chat", btoa(chatCode)), async (document) => {
             const data = document.data()
-            console.log(data)
-            
+
             if (data) {
                 cacheSetData(cacheSetMessages(data.messages))
                 if (data.requestRemove) {
@@ -112,7 +133,7 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
         subscribe_userChat_newMessage.current = onSnapshot(doc(db, "newMessage", btoa(chatCode)), async (document) => {
             const data = document.data()
             console.log(data)
-            
+
             if (data) {
                 cacheSetData(cacheSetNewMessages(data.messages))
                 cacheSetData(cacheSetNewMessages_sender(data.recentSender))
@@ -136,6 +157,21 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
                 }
             }));
         });
+    }
+
+    const enableListener_userLocation_listUserOnline = async (clientGmail: string) => {
+        if (subscribe_userLocation_listUserOnline.current) {
+            console.log("Started before")
+            return
+        }
+
+        subscribe_userLocation_listUserOnline.current = onSnapshot(doc(db, "userActiveStatus", btoa(clientGmail)), (doc) => {
+            const data = doc.data()
+            console.log(data)
+            if (data) {
+                cacheSetData(cacheSetUserLocation_listUserOnline(data))
+            }
+        })
     }
 
     // Off listener
@@ -163,6 +199,14 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
         }
     }
 
+    const disableListener_userLocation_listUserOnline = () => {
+        if (subscribe_userLocation_listUserOnline.current) {
+            subscribe_userLocation_listUserOnline.current()
+            subscribe_userLocation_listUserOnline.current = undefined
+            console.log("stop listen get user online")
+        }
+    }
+
     return (
         <CacheContext.Provider value={{
             cacheSetData,
@@ -171,6 +215,7 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
             enableListener_userChat_getMessage,
             enableListener_userChat_getNewMessage,
             enableListener_userChat_amountNewMessage,
+            enableListener_userLocation_listUserOnline,
 
             disableListener_userInformation,
             disableListener_userChat_getMessage,

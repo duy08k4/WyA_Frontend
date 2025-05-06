@@ -27,18 +27,23 @@ export const userInformation = createSlice({
         cacheSetName: (state, action: PayloadAction<string>) => {
             state.username = action.payload;
         },
+
         cacheSetGmail: (state, action: PayloadAction<string>) => {
             state.gmail = action.payload;
         },
+
         cacheSetAvatarCode: (state, action: PayloadAction<string>) => {
             state.avartarCode = action.payload;
         },
+
         cacheSetListFriend: (state, action: PayloadAction<interface__FriendPage__connections>) => {
             state.friends.push(action.payload);
         },
+        
         cacheSetFriendRequest: (state, action: PayloadAction<interface__FriendPage__friendRequest>) => {
             state.requests.push(action.payload);
         },
+        
         cacheSetFullUserInformation: (state, action: PayloadAction<typeof initial_userInformation | DocumentData | undefined>) => {
             const payload = action.payload;
 

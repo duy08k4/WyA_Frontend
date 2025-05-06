@@ -20,6 +20,8 @@ import chatIcon from '../../assets/dashboard_chat_icon.png'
 import aboutIcon from '../../assets/dashboard_aboutus_icon.png'
 import contactIcon from '../../assets/dashboard_contactus_icon.png'
 import profileIcon from '../../assets/dashboard_setting_icon.png'
+
+// Import custom hook
 import { useCache } from "../../hooks/cache/cache";
 
 
@@ -49,11 +51,15 @@ const DashboardPage: React.FC = () => {
         setIsNewMessage(amount == 0 ? false : true)
     }, [amountNewChat])
 
+    const test = () => {
+        
+    }
+
     return (
         <IonPage>
 
             <div className="dashboard__page">
-                <div className="dashboard__profileCard--container">
+                <div className="dashboard__profileCard--container" onClick={test}>
                     <div className="dashboard__profileCard__card">
                         <div className="dashboard__profileCard__imgBox">
                             <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" className="dashboard__profileCard__imgBox--img" alt="User avartar" />

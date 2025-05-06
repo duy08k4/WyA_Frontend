@@ -22,7 +22,7 @@ import { useSpinner } from "../../hooks/spinner/spinner"
 
 const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) => {
     // State
-    const [userOnline, setUserOnline] = useState<boolean>(true)
+    const [userOnline, setUserOnline] = useState<boolean>(false)
     const [chatBoxConfirm, setChatBoxConfirm] = useState<boolean>(false)
     const [inputPlaceholder, setInputPlaceholder] = useState<boolean>(false)
     const messageContainerRef = useRef<HTMLDivElement>(null);
@@ -41,6 +41,7 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
     const targetName = useSelector((state: RootState) => state.userChat.targetName)
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
     const requestRemove = useSelector((state: RootState) => state.userChat.requestRemove)
+    const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline) // Object Type
 
     // Data
 
@@ -161,6 +162,11 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
         }
     }, [requestRemove])
 
+    useEffect(() => {
+        const targetUser_status = listUserOnline[btoa(targetGmail)]
+        setUserOnline(targetUser_status)
+    }, [listUserOnline])
+
     return (
         <div className="chatbox">
             <div className={`chatbox__header`}>
@@ -169,13 +175,18 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
                 </button>
 
                 <div className="chatbox__user">
-                    <div className="chatbox__avatar">
+
+
+                    <div className={`chatbox__avatar ${userOnline ? "online" : ""}`}>
                         <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="avatar user" />
                     </div>
 
                     <div className="chatbox__user--info">
                         <p className="chatbox__user--username">{targetName}</p>
-                        <p className="chatbox__user--onlineStatus">Online</p>
+                        <p className="chatbox__user--onlineStatus">
+                            <i className={`fas fa-circle userStatus ${userOnline ? "online" : ""}`}></i>
+                            {userOnline ? "Online" : "Offline"}
+                        </p>
                     </div>
                 </div>
 

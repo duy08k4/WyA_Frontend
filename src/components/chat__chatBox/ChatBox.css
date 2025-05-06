@@ -35,6 +35,8 @@
     gap: 8px;
 }
 
+
+
 .chatbox__avatar {
     overflow: hidden;
     width: 35px;
@@ -68,9 +70,16 @@
 .chatbox__user--onlineStatus {
     height: fit-content;
     width: fit-content;
-    font-size: 10px;
+    font-size: 12px;
     color: #3E3F46;
     background-color: transparent !important;
+}
+.userStatus {
+    margin-right: 5px;
+}
+
+.userStatus.online {
+    color: lime;
 }
 
 .chatbox__button--clearChat {

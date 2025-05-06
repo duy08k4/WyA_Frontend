@@ -3,12 +3,14 @@ import { configureStore } from "@reduxjs/toolkit";
 // Import Reducers
 import userInformation from "./reducers/user.reducer";
 import userChat from "./reducers/chat.reducer";
+import userLocation from "./reducers/userLocation.reducer";
 
 
 export const store = configureStore({
     reducer: {
         userInformation: userInformation,
-        userChat: userChat
+        userChat: userChat,
+        userLocation: userLocation
     }
 })
 

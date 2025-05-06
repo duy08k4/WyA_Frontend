@@ -7,11 +7,18 @@ import { useHistory } from "react-router";
 
 // Import custom hooks
 import { useCache } from "../../hooks/cache/cache";
+import { useSocket } from "../../hooks/socket/socket";
+
+// Import services
+import logoutAccount from "../../services/logout_account";
+
+// Import redux
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 // Import css
 import "./profile_page.css"
 import "../../main.css"
-import logoutAccount from "../../services/logout_account";
 
 const ProfilePage: React.FC = () => {
     // States
@@ -24,6 +31,10 @@ const ProfilePage: React.FC = () => {
 
     // Custom hooks
     const { disableListener_userInformation } = useCache()
+    const { setStatusWhenLogout } = useSocket()
+
+    // Redux
+    const gmail = useSelector((state: RootState) => state.userInformation.gmail)
 
     // Handlers
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +102,10 @@ const ProfilePage: React.FC = () => {
                 await logoutAccount().then((data) => {
                     if (data.status == 200) {
                         disableListener_userInformation()
-                        redirect.push("/login")
+                        setStatusWhenLogout(gmail)
+                        setTimeout(() => {
+                            redirect.push("/login")
+                        },500)
                     }
                 })
 

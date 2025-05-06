@@ -1,5 +1,10 @@
+// Import libraries
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { Route, useHistory, useLocation } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { App } from '@capacitor/app';
+import { useEffect, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,11 +38,16 @@ import RegisterPage from './pages/register_page/register_page';
 
 // Import services
 import checkAccess from './services/checkAccess.serv';
-import { useEffect, useState } from 'react';
-import { useCache } from './hooks/cache/cache';
+
+// Import redux
+import { useSelector } from 'react-redux';
 import { cacheSetDefaultUserInformation, cacheSetFriendRequest, cacheSetFullUserInformation, cacheSetGmail } from './redux/reducers/user.reducer';
-import { App } from '@capacitor/app';
-import { StatusBar, Style } from '@capacitor/status-bar';
+import { RootState } from './redux/store';
+
+// Import custom hook
+import { useCache } from './hooks/cache/cache';
+import { useSocket } from './hooks/socket/socket';
+
 
 setupIonicReact();
 
@@ -47,7 +57,13 @@ const AppPage: React.FC = () => {
   const redirect = useHistory()
   const { cacheSetData, enableListener_userInformation } = useCache()
 
-  console.log(pageLocation.pathname)
+  // Redux
+  const listFriends = useSelector((state: RootState) => state.userInformation.friends)
+  const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+
+  // Custom hook
+  const { sendListFriendToSck } = useSocket()
+
 
   // Status bar custom (GPT Rec)
   useEffect(() => {
@@ -94,7 +110,7 @@ const AppPage: React.FC = () => {
           if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
             redirect.push("/")
           }
-          
+
           enableListener_userInformation(gmail)
         } else {
           if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
@@ -109,6 +125,23 @@ const AppPage: React.FC = () => {
       })
     })()
   }, [pageLocation])
+
+  // Set client status
+  useEffect(() => {
+    if (listFriends && listFriends.length != 0 && gmail && gmail != "") {
+      sendListFriendToSck({
+        gmail,
+        listFriends
+      })
+    }
+  }, [listFriends.length, gmail])
+
+  // Get friend active Status
+  // useEffect(() => {
+  //   if (listFriends && listFriends.length != 0) {
+  //     enableListener_userLocation_listUserOnline(gmail)
+  //   }
+  // }, [listFriends.length])
 
   // useEffect(() => {
   //   cacheSetData(cacheSetFullUserInformation(userData))

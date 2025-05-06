@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { ToastProvider } from './hooks/toastMessage/toast';
 import { SpinnerProvider } from './hooks/spinner/spinner';
 import { CacheProvider } from './hooks/cache/cache';
+import { SocketProvider } from './hooks/socket/socket';
 import AppPage from './App';
 
 
@@ -19,7 +20,9 @@ root.render(
       <ToastProvider>
         <CacheProvider>
           <IonReactRouter>
-            <AppPage />
+            <SocketProvider>
+              <AppPage />
+            </SocketProvider>
           </IonReactRouter>
         </CacheProvider>
       </ToastProvider>
