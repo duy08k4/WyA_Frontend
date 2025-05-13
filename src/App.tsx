@@ -86,7 +86,7 @@ const AppPage: React.FC = () => {
   useEffect(() => {
     const backButtonListener = App.addListener('backButton', () => {
       // Nếu đang ở trang home, thoát ứng dụng
-      if (redirect.location.pathname === '/home') {
+      if (redirect.location.pathname === '/') {
         App.exitApp();
       } else {
         // Nếu không, quay lại trang trước

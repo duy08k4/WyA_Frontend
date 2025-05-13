@@ -9,11 +9,15 @@ interface interface__authContext {
     enableListener_userChat_getNewMessage: () => void,
     enableListener_userChat_amountNewMessage: () => void,
     enableListener_userLocation_listUserOnline: (clientGmail: string) => void,
+    enableListener_userLocation_requestShareLocation: () => void,
+    enableListener_userLocation_mapConnection: () => void,
 
     // Disable Listener
     disableListener_userInformation: () => void,
     disableListener_userChat_getMessage: () => void,
-    disableListener_userChat_getNewMessage: () => void
+    disableListener_userChat_getNewMessage: () => void,
+    disableListener_userLocation_requestShareLocation: () => void,
+    disableListener_userLocation_mapConnection: () => void
 }
 
 interface interface__authProviderProps {

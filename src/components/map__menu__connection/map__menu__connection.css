@@ -1,0 +1,65 @@
+.ConnectionMenu {
+    z-index: 1200;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.menuConnectionForm {
+    height: 80%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.ConnectionMenu__titleBox {
+    height: fit-content;
+    width: 100%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px 20px 0 0;
+    border-bottom: 1px solid lightgray;
+    padding: 10px 0;
+}
+
+.menuConnection {
+    overflow: auto;
+    flex: 1;
+    width: 100%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    /* padding: 20px 16px 0px; */
+}
+
+.ConnectionMenu__btnBox {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    padding: 10px 0;
+
+    button {
+        background-color: red;
+        height: 80%;
+        width: 90%;
+        padding: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+    }
+}

@@ -20,17 +20,38 @@
     align-items: center;
     gap: 10px;
     border-radius: 20px 20px 0 0;
-    padding: 20px 16px 0px;
+    /* padding: 20px 16px 0px; */
 }
 
-.menuForm__title__container {
-    height: fit-content;
+.menuForm__tab__container {
+    height: 50px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #dddddd;
+    /* border-bottom: 1px solid #dddddd; */
 }
+
+.menuForm__tab {
+    height: 100%;
+    width: 50%;
+    color: black;
+    background-color: #eeeeee;
+}
+
+.menuForm__tab.chosen {
+    font-weight: bold;
+    background-color: white;
+}
+
+.menuForm__tab--friend {
+    border-radius: 20px 0 20px 0;
+}
+
+.menuForm__tab--request {
+    border-radius: 0 20px 0 20px;
+}
+
 
 
 
@@ -40,12 +61,65 @@
     width: 100%;
 }
 
+.menuShowcase--child {
+    height: 100%;
+    width: 100%;
+}
+
+.menuShowcase--request--pendingContainer {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+}
+
+.menuShowcase--request--requestContainer {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+}
+
 .menu--item {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 12px;
+}
+
+.menu--item--request {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 12px;
+
+    .menu__buttonContainer--item--request {
+        height: 100%;
+        width: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .menu__button--request {
+        color: white;
+    }
+
+    .menu__button--requestAccept {
+        background-color: lime;
+    }
+
+    .menu__button--requestDecline {
+        background-color: red;
+    }
+    
+    .menu__button--requestRevoke {
+        background-color: red;
+    }
 }
 
 .menu--item:last-child {

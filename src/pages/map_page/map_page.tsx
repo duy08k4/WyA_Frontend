@@ -6,6 +6,8 @@ import { useHistory } from "react-router";
 // Import components
 import MapResizeHandler from "../../components/map_resizeHandler/MapResizeHandler";
 import MapMenu from "../../components/map__menu/mapMenu";
+import MapConnectionMenu from "../../components/map__menu__connection/map__menu__connection";
+import MapRoutingMenu from "../../components/map__menu__routing/map__menu__routing";
 
 // Import css
 import "./map_page.css";
@@ -13,6 +15,9 @@ import "../../main.css";
 
 // Ionic 
 import { Capacitor } from "@capacitor/core";
+
+// Custom hook
+import { useSocket } from "../../hooks/socket/socket";
 
 // Redux
 import { useSelector } from "react-redux";
@@ -23,6 +28,7 @@ import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
 import { Geolocation } from '@capacitor/geolocation';
 import L, { Marker as LeafletMarker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine';
 import 'leaflet-defaulticon-compatibility';
 
 const customIcon = new L.Icon({
@@ -32,10 +38,21 @@ const customIcon = new L.Icon({
     popupAnchor: [0, -41],  // Vị trí popup sẽ xuất hiện
 });
 
+const customTargetIcon = new L.Icon({
+    iconUrl: 'https://easydrawingguides.com/wp-content/uploads/2017/01/How-to-Draw-a-cartoon-car-20.png',  // Đường dẫn đến biểu tượng
+    iconSize: [32, 41],  // Kích thước của biểu tượng
+    iconAnchor: [16, 32],  // Chân của biểu tượng sẽ nằm ở đâu
+    popupAnchor: [0, -41],  // Vị trí popup sẽ xuất hiện
+});
+
 const MapPage: React.FC = () => {
     // States
     const [isMapMenu, setIsMapMenu] = useState<boolean>(false)
     const [isConnect, setIsConnect] = useState<boolean>(false)
+    const [haveConnection, setHaveConnection] = useState<boolean>(false)
+    const [isRouting, setIsRouting] = useState<boolean>(false)
+    const [routingControl, setRoutingControl] = useState<L.Routing.Control | null>(null);
+    const [routes, setRoutes] = useState<any[]>([]);
     const redirect = useHistory()
 
     // State map
@@ -46,18 +63,35 @@ const MapPage: React.FC = () => {
     const [position, setPosition] = useState<[number, number]>([10.8231, 106.6297]);
     const [isUserInteracting, setIsUserInteracting] = useState(false);
 
-    // Error
+    // Custom hook
+    const { shareLocation } = useSocket()
 
     // Data
+    const maxAvartarBox = parseInt(import.meta.env.VITE_HEADER_SHOWCASEUSER_MAX_ELEMENT)
 
     // Redux
     const listFriends = useSelector((state: RootState) => state.userInformation.friends)
+    const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
+    const gmail = useSelector((state: RootState) => state.userInformation.gmail)
 
-    // Listener
+    const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline)
+    const targetLocation = useSelector((state: RootState) => state.userLocation.targetLocation)
+
+    // Function
+    const calculateRoute = useRef<(targetPosition: [number, number]) => void>(() => {})
+    const clearRoute = useRef<() => void>(() => {})
 
     // Handlers
     const handleCloseMenu = () => {
         setIsMapMenu(!isMapMenu)
+    }
+
+    const handleCloseMenuConnection = () => {
+        setHaveConnection(!haveConnection)
+    }
+
+    const handleCloseMenuRouting = () => {
+        setIsRouting(!isRouting)
     }
 
     const findMyLocation = () => {
@@ -66,8 +100,15 @@ const MapPage: React.FC = () => {
         }
     }
 
-    const handleIsConnecttion = () => {
-        setIsConnect(!isConnect)
+    const handleRoutingTargetUser = (targetGmail: string) => {
+        const getLocationForRouting = targetLocation[btoa(targetGmail)]
+        clearRoute.current()
+        calculateRoute.current(getLocationForRouting)
+        handleCloseMenuRouting()
+    }
+
+    const handleCloseRoutingTargetUser = () => {
+        clearRoute.current()
     }
 
     const handleDirection = () => {
@@ -86,9 +127,10 @@ const MapPage: React.FC = () => {
                         setPosition(newPos);
                     },
                     (error) => {
-                        console.error(error);
+                        // Log error when time out
+                        // console.error(error);
                     },
-                    { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
                 );
             } else {
                 console.log("Geolocation không khả dụng trên trình duyệt này.");
@@ -109,7 +151,7 @@ const MapPage: React.FC = () => {
             }
         };
 
-        // Kiểm tra nền tảng hiện tại
+        // Check platform
         if (Capacitor.getPlatform() === 'web') {
             getGeolocation();
         } else {
@@ -117,6 +159,51 @@ const MapPage: React.FC = () => {
         }
 
     }, []);
+
+    // Routing
+    calculateRoute.current = (targetPosition: [number, number]) => {
+        if (mapRef.current && position) {  // Kiểm tra mapRef.current và position
+            // Xóa tuyến đường cũ nếu có
+            if (routingControl) {
+                mapRef.current?.removeControl(routingControl);
+            }
+
+            // Tạo tuyến đường mới
+            const waypoints = [
+                L.latLng(position[0], position[1]),
+                L.latLng(targetPosition[0], targetPosition[1]),
+            ];
+
+            const control = L.Routing.control({
+                waypoints: waypoints,
+                routeWhileDragging: true,
+                showAlternatives: true,
+                fitSelectedRoutes: true,
+                show: false,
+                lineOptions: {
+                    styles: [{ color: '#3a7bd5', opacity: 0.7, weight: 5 }],
+                    extendToWaypoints: true,
+                    missingRouteTolerance: 10,
+                },
+                plan: L.Routing.plan(waypoints, {
+                    draggableWaypoints: false,
+                    addWaypoints: false,
+                    createMarker: () => false, // Không tạo marker
+                }),
+            }).addTo(mapRef.current);
+
+            setRoutingControl(control); // Lưu control mới vào state
+
+        }
+    };
+
+    // Hàm xóa tuyến đường
+    clearRoute.current = () => {
+        if (mapRef.current && routingControl) {
+            mapRef.current.removeControl(routingControl);
+            setRoutingControl(null);
+        }
+    };
 
     useEffect(() => {
         if (mapRef.current && position && !isUserInteracting) {
@@ -142,6 +229,22 @@ const MapPage: React.FC = () => {
         }, 15000);
     });
 
+    useEffect(() => {
+        if (mapConnection && mapConnection.length != 0) {
+            setIsConnect(true)
+        } else {
+            setIsConnect(false)
+        }
+    }, [mapConnection])
+
+
+    useEffect(() => {
+        shareLocation({
+            clientGmail: gmail,
+            clientLocation: position,
+            targetUsers: mapConnection
+        })
+    }, [position])
 
     return (
         <IonPage>
@@ -156,17 +259,23 @@ const MapPage: React.FC = () => {
                         {!isConnect ? "" : (
                             <>
                                 <div className="mapPage__userInfor">
-                                    <div className="mainPage__searchBox__avatarBox">
-                                        <img
-                                            src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223"
-                                            alt="Avatar user"
-                                        />
-                                    </div>
+                                    {mapConnection.slice(0, maxAvartarBox).map((connection, index) => (
+                                        <div
+                                            key={index}
+                                            className={`mainPage__searchBox__avatarBox ${index == maxAvartarBox - 1 ? "mainPage__searchBox__avatarBoxLast" : ""}`}
+                                            style={{ ['--n' as any]: `${index}`, ['--count' as any]: index == maxAvartarBox - 1 ? `"${mapConnection?.length - maxAvartarBox}"` : `""` }}
+                                        >
+                                            <img
+                                                src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223"
+                                                alt="Avatar user"
+                                            />
+                                        </div>
+                                    ))}
 
-                                    <p className="mapPage__header--username">Tuong Duy</p>
+
                                 </div>
 
-                                <button className="mapPage__disconnect--button"><i className="fas fa-unlink"></i></button>
+                                <button className="mapPage__disconnect--button" onClick={handleCloseMenuConnection}>Disconnect</button>
                             </>
                         )}
 
@@ -193,11 +302,16 @@ const MapPage: React.FC = () => {
                             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                         // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
-                        <Marker position={position} icon={customIcon} ref={markerRef}>
-                            <Popup>
-                                <img src="https://cdn3.iconfinder.com/data/icons/business-299/24/Location_Pin-512.png" height={100} width={100} alt="" />
-                            </Popup>
-                        </Marker>
+                        <Marker position={position} icon={customIcon} ref={markerRef}></Marker>
+
+                        {mapConnection.map((connection, index) => {
+                            const connectionGmail = connection.gmail
+                            if (targetLocation[btoa(connectionGmail)]) {
+                                return <Marker key={index} position={targetLocation[btoa(connectionGmail)]} icon={customTargetIcon} ref={markerRef}></Marker>
+                            }
+                        })}
+
+
                         <MapResizeHandler />
                     </MapContainer>
                 </div>
@@ -211,19 +325,23 @@ const MapPage: React.FC = () => {
                         <i className="fas fa-crosshairs"></i>
                     </button>
 
-                    <button className="mapPage__mainButtonContainer--button mapPage__mainButtonContainer--button--gps">
+                    <button className="mapPage__mainButtonContainer--button mapPage__mainButtonContainer--button--gps" onClick={handleCloseMenuRouting}>
                         <i className="fas fa-road"></i>
                     </button>
                 </div>
 
-                {/* <div className="mapPage__buttonContainer">
-                    <button className="mapPage__func mapPage__func--disconnect"><i className="fas fa-unlink"></i></button>
-                    <button className="mapPage__func mapPage__func--direction"><i className="fas fa-road"></i></button>
-                </div> */}
-
                 {!isMapMenu ? "" : (
-                    <MapMenu closeMenu={handleCloseMenu} friends={listFriends} handleIsConnecttion={handleIsConnecttion} />
+                    <MapMenu closeMenu={handleCloseMenu} />
                 )}
+
+                {!haveConnection ? " " : (
+                    <MapConnectionMenu closeMenu={handleCloseMenuConnection} />
+                )}
+
+                {!isRouting ? "" : (
+                    <MapRoutingMenu closeMenu={handleCloseMenuRouting} handleRoutingTargetUser={handleRoutingTargetUser} handleCloseRoutingTargetUser={handleCloseRoutingTargetUser} />
+                )}
+
             </div>
         </IonPage>
     );

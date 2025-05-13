@@ -19,7 +19,7 @@
 }
 
 .mainPage__searchBox {
-    height: 50px;
+    height: 60px;
     flex: 1;
     display: flex;
     align-items: center;
@@ -32,8 +32,8 @@
 }
 
 .mainPage__searchBox.noCnnection {
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,9 +41,19 @@
     .mainPage__searchBox__backBtn {
         height: 100%;
         width: 100%;
+        font-size: 18px;
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 0;
+
+        i {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     }
 }
 
@@ -72,28 +82,52 @@
 }
 
 .mapPage__userInfor {
+    position: relative;
     height: 100%;
     flex: 1;
     display: flex;
     align-items: center;
     gap: 10px;
+
 }
 
 .mainPage__searchBox__avatarBox {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
     height: 90%;
     aspect-ratio: 1/1;
     display: flex;
     overflow: hidden;
     background-color: white;
-    border: black;
     border-radius: 50%;
+    border: solid 1px lime;
     flex-shrink: 0;
-
+    
     img {
         width: 100%;
         height: 100%;
     }
+    
+}
 
+.mainPage__searchBox__avatarBox:nth-child(n + 2) {
+    transform: translate(calc(40% * (var(--n) - 1)), -50%); 
+}
+
+.mainPage__searchBox__avatarBox.mainPage__searchBox__avatarBoxLast::after {
+    position: absolute;
+    content: var(--count);
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .mapPage__header--username {
@@ -231,4 +265,8 @@
 /* Leaflet */
 .leaflet-popup-close-button {
     display: none !important;
+}
+
+.leaflet-routing-container {
+    display: none;
 }
