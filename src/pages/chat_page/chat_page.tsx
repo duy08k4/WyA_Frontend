@@ -47,6 +47,7 @@ const ChatPage: React.FC = () => {
 
   // Handlers
   const openChatBox = async (chatIndex: number) => {
+    console.log("ha ha ha ha ha")
     const showToast = setTimeout(() => {
       addToast({
         typeToast: "i",

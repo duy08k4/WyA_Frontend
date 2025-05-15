@@ -1,6 +1,10 @@
 import React from "react";
 import "./About__team.css";
 
+import NTMU from "../../assets/avt_myuyen.png"
+import TBTD from "../../assets/avt_tuongduy.png"
+import DPT from "../../assets/avt_phutrong.png"
+
 const AboutTeam:React.FC = () => {
 
   // Hard Data
@@ -9,19 +13,19 @@ const AboutTeam:React.FC = () => {
       name: "Tran Ba Tuong Duy",
       role: "Leader & Developer & Designer",
       description: "Managed project progress and collaborated in designing and developing applications to ensure product quality and timely delivery.",
-      image: "src/assets/avt_tuongduy.png",
+      image: TBTD,
     },
     {
       name: "Do Phu Trong",
       role: "Developer & Designer",
       description: "Focused on backend development and system architecture design. Participated in building API services, database management, and optimizing system performance.",
-      image: "src/assets/avt_phutrong.png",
+      image: DPT,
     },
     {
       name: "Nguyen Thi My Uyen",
       role: "Developer & Designer",
       description: "Focused on frontend development and user interface design. Participated in building responsive web interfaces, improving user experience, and implementing interactive features.",
-      image: "src/assets/avt_myuyen.png",
+      image: NTMU,
     }
   ]
 

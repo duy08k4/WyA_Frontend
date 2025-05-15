@@ -99,7 +99,12 @@ export default function LoginPage() {
                     })
                 }
             }).catch((err) => {
-                throw new Error(err)
+                closeSpinner()
+                addToast({
+                    typeToast: "e",
+                    content: err,
+                    duration: 5
+                })
             })
         } else {
             addToast({

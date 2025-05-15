@@ -6,7 +6,7 @@ interface interface__MapPage__Props {
 
 interface interface__MapPage__Routing__Props {
     closeMenu: () => void,
-    handleRoutingTargetUser: (targetGmail: string) => void,
+    handleRoutingTargetUser: (targetGmail: string, targetName: string) => void,
     handleCloseRoutingTargetUser: () => void
 }
 

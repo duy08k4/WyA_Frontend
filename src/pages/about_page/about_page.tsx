@@ -60,7 +60,7 @@ const AboutPage: React.FC = () => {
             <div className="aboutPage">
                 <div className="aboutPage__navigation">
                     <div className="aboutPage__titleContainer">
-                        <h2 className="aboutPage__titleContainer--title">about our project</h2>
+                        <h2 className="aboutPage__titleContainer--title">about</h2>
                     </div>
 
                     <div className="aboutPage__menuContainer">
@@ -73,7 +73,7 @@ const AboutPage: React.FC = () => {
                         </div>
 
                         <div className={`aboutPage__menuContainer__element aboutPage__menuContainer__element--tech ${chooseTech ? "chosen" : ""}`} onClick={() => {setChoide("tech")}}>
-                            <p className="aboutPage__menuContainer__element--content">teach</p>
+                            <p className="aboutPage__menuContainer__element--content">tech</p>
                         </div>
                     </div>
                 </div>

@@ -212,11 +212,12 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
 
                     {!chooseFriend ? "" : (
                         <div className="menuShowcase--child menuShowcase--friend">
-                            {userOnline.length == 0 ? "" : (
+                            {userOnline.length === 0 ? "" : (
                                 userOnline.map((user, index) => {
                                     const userStatus = listRequestShareLocation.find(friend => friend.gmail == user.gmail)
                                     // let userStatus = undefined
                                     console.log(userStatus)
+                                    
                                     return (
                                         <div key={index} className="menu--item">
                                             <div className="menu--user">

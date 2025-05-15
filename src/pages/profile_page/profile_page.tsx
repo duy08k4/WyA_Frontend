@@ -19,6 +19,7 @@ import { RootState } from "../../redux/store";
 // Import css
 import "./profile_page.css"
 import "../../main.css"
+import { useToast } from "../../hooks/toastMessage/toast";
 
 const ProfilePage: React.FC = () => {
     // States
@@ -32,6 +33,7 @@ const ProfilePage: React.FC = () => {
     // Custom hooks
     const { disableListener_userInformation } = useCache()
     const { setStatusWhenLogout } = useSocket()
+    const { addToast } = useToast()
 
     // Redux
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
@@ -105,8 +107,14 @@ const ProfilePage: React.FC = () => {
                         setStatusWhenLogout(gmail)
                         setTimeout(() => {
                             redirect.push("/login")
-                        },500)
+                        }, 500)
                     }
+                }).catch((err) => {
+                    addToast({
+                        typeToast: "e",
+                        content: err,
+                        duration: 5
+                    })
                 })
 
             case 'delete':

@@ -36,6 +36,7 @@ const MapRoutingMenu: React.FC<interface__MapPage__Routing__Props> = ({ closeMen
 
     // Redux
     const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
+    const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline)
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
 
     // Handlers
@@ -66,6 +67,8 @@ const MapRoutingMenu: React.FC<interface__MapPage__Routing__Props> = ({ closeMen
 
                 <div className="menuConnection">
                     {mapConnection.map((connection, index) => {
+                        if (listUserOnline[btoa(connection.gmail)] == false) return ""
+
                         return (
                             <div key={index} className="menu--item--request">
                                 <div className="menu--user">
@@ -77,7 +80,7 @@ const MapRoutingMenu: React.FC<interface__MapPage__Routing__Props> = ({ closeMen
                                 </div>
 
                                 <div className="menu__buttonContainer--item--request menu__buttonContainer--item--routing">
-                                    <button className="menu__button menu__button--request" onClick={() => { handleRoutingTargetUser(connection.gmail) }}>
+                                    <button className="menu__button menu__button--request" onClick={() => { handleRoutingTargetUser(connection.gmail, connection.username) }}>
                                         <i className="fas fa-directions"></i>
                                     </button>
                                 </div>

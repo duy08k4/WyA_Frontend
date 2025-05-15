@@ -46,7 +46,10 @@ export const SocketProvider: React.FC<interface__socketProviderProps> = ({ child
             const userGmail = user.gmail
 
             if (!listUserOnline[btoa(userGmail)]) {
-                delete targetLocation_copy[btoa(userGmail)]
+
+                try {
+                    delete targetLocation_copy[btoa(userGmail)]
+                } catch {}
 
                 if (targetRouting[btoa(userGmail)]) {
                     cacheSetData(cacheUpdateUserLocation_targetRouting({

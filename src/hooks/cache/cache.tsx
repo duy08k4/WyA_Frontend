@@ -19,7 +19,6 @@ import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore
 import { db } from "../../config/firebaseSDK"
 
 // Import services
-import { meregMessage } from "../../services/sendMessage.serv"
 import { cacheSetUserLocation_listUserOnline, cacheSetUserLocation_mapConnection, cacheSetUserLocation_requestShareLocation } from "../../redux/reducers/userLocation.reducer"
 
 const CacheContext = createContext<interface__authContext | undefined>(undefined)
@@ -138,7 +137,6 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
                 cacheSetData(cacheSetNewMessages(data.messages))
                 cacheSetData(cacheSetNewMessages_sender(data.recentSender))
                 enableListener_userChat_amountNewMessage()
-                meregMessage({ chatCode })
             } else {
                 cacheSetData(cacheSetNewMessages([]))
             }

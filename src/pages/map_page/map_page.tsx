@@ -17,6 +17,7 @@ import "../../main.css";
 import { Capacitor } from "@capacitor/core";
 
 // Custom hook
+import { useSpinner } from "../../hooks/spinner/spinner";
 import { useSocket } from "../../hooks/socket/socket";
 
 // Redux
@@ -30,6 +31,9 @@ import L, { Marker as LeafletMarker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine';
 import 'leaflet-defaulticon-compatibility';
+import { useCache } from "../../hooks/cache/cache";
+import { cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
+import { useToast } from "../../hooks/toastMessage/toast";
 
 const customIcon = new L.Icon({
     iconUrl: 'https://png.pngtree.com/png-clipart/20230805/original/pngtree-map-marker-flat-red-color-icon-ui-position-placement-vector-picture-image_9756810.png',  // Đường dẫn đến biểu tượng
@@ -39,7 +43,7 @@ const customIcon = new L.Icon({
 });
 
 const customTargetIcon = new L.Icon({
-    iconUrl: 'https://easydrawingguides.com/wp-content/uploads/2017/01/How-to-Draw-a-cartoon-car-20.png',  // Đường dẫn đến biểu tượng
+    iconUrl: 'https://freecharitycars.org/wp-content/uploads/2019/11/car-e1641849287424.png',  // Đường dẫn đến biểu tượng
     iconSize: [32, 41],  // Kích thước của biểu tượng
     iconAnchor: [16, 32],  // Chân của biểu tượng sẽ nằm ở đâu
     popupAnchor: [0, -41],  // Vị trí popup sẽ xuất hiện
@@ -53,6 +57,7 @@ const MapPage: React.FC = () => {
     const [isRouting, setIsRouting] = useState<boolean>(false)
     const [routingControl, setRoutingControl] = useState<L.Routing.Control | null>(null);
     const [routes, setRoutes] = useState<any[]>([]);
+    const [userRouting, setUserRouting] = useState<string>("")
     const redirect = useHistory()
 
     // State map
@@ -65,6 +70,8 @@ const MapPage: React.FC = () => {
 
     // Custom hook
     const { shareLocation } = useSocket()
+    const { openSpinner, closeSpinner } = useSpinner()
+    const { addToast } = useToast()
 
     // Data
     const maxAvartarBox = parseInt(import.meta.env.VITE_HEADER_SHOWCASEUSER_MAX_ELEMENT)
@@ -78,8 +85,8 @@ const MapPage: React.FC = () => {
     const targetLocation = useSelector((state: RootState) => state.userLocation.targetLocation)
 
     // Function
-    const calculateRoute = useRef<(targetPosition: [number, number]) => void>(() => {})
-    const clearRoute = useRef<() => void>(() => {})
+    const calculateRoute = useRef<(targetPosition: [number, number]) => void>(() => { })
+    const clearRoute = useRef<() => void>(() => { })
 
     // Handlers
     const handleCloseMenu = () => {
@@ -100,12 +107,29 @@ const MapPage: React.FC = () => {
         }
     }
 
-    const handleRoutingTargetUser = (targetGmail: string) => {
+    const handleRoutingTargetUser = (targetGmail: string, targetName: string) => {
         const getLocationForRouting = targetLocation[btoa(targetGmail)]
-        clearRoute.current()
-        calculateRoute.current(getLocationForRouting)
-        handleCloseMenuRouting()
+        setUserRouting(targetGmail)
+
+        if (getLocationForRouting) {
+            clearRoute.current()
+            calculateRoute.current(getLocationForRouting)
+            handleCloseMenuRouting()
+        } else {
+            addToast({
+                typeToast: "e",
+                content: `${targetName} don't share location`,
+                duration: 3
+            })
+        }
     }
+
+    useEffect(() => {
+        if (userRouting != "" && listUserOnline[btoa(userRouting)] == false) {
+            handleCloseRoutingTargetUser()
+            setUserRouting("")
+        }
+    }, [listUserOnline])
 
     const handleCloseRoutingTargetUser = () => {
         clearRoute.current()
@@ -117,48 +141,55 @@ const MapPage: React.FC = () => {
 
 
     // Map
+    const getPositionLoop = useRef<ReturnType<typeof setInterval> | null>(null)
+
     useEffect(() => {
-        const getGeolocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(
-                    (loc) => {
-                        // Khi vị trí thay đổi
-                        const newPos: [number, number] = [loc.coords.latitude, loc.coords.longitude];
-                        setPosition(newPos);
-                    },
-                    (error) => {
-                        // Log error when time out
-                        // console.error(error);
-                    },
-                    { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
-                );
-            } else {
-                console.log("Geolocation không khả dụng trên trình duyệt này.");
-            }
-        };
+        if (mapConnection.length > 0 && getPositionLoop.current === null) {
+            getPositionLoop.current = setInterval(async () => {
+                try {
+                    const coordinates = await Geolocation.getCurrentPosition({
+                        enableHighAccuracy: true,
+                        timeout: 30000,
+                        maximumAge: 0
+                    })
 
-        const getMobileGeolocation = async () => {
-            try {
-                await Geolocation.requestPermissions();
-                const id = await Geolocation.watchPosition({}, (loc) => {
-                    if (loc && loc.coords) {
-                        const newPos: [number, number] = [loc.coords.latitude, loc.coords.longitude];
-                        setPosition(newPos);
+                    const newPosition: [number, number] = [
+                        coordinates.coords.latitude,
+                        coordinates.coords.longitude
+                    ]
+
+                    setPosition(newPosition)
+                    
+                    if (mapRef.current) {
+                        mapRef.current.setView(newPosition, mapRef.current.getZoom())
                     }
-                });
-            } catch (error) {
-                console.error("Không thể lấy vị trí từ Capacitor", error);
-            }
-        };
-
-        // Check platform
-        if (Capacitor.getPlatform() === 'web') {
-            getGeolocation();
-        } else {
-            getMobileGeolocation();
+                } catch (error) {
+                    console.log(error)
+                }
+            }, 2000)
         }
 
-    }, []);
+        if (mapConnection.length === 0 && getPositionLoop.current !== null) {
+            clearInterval(getPositionLoop.current)
+            getPositionLoop.current = null
+        }
+
+        return () => {
+            if (getPositionLoop.current !== null) {
+                clearInterval(getPositionLoop.current)
+                getPositionLoop.current = null
+            }
+        }
+    }, [mapConnection])
+
+    useEffect(() => {
+        shareLocation({
+            clientGmail: gmail,
+            clientLocation: position,
+            targetUsers: mapConnection
+        })
+    }, [position])
+
 
     // Routing
     calculateRoute.current = (targetPosition: [number, number]) => {
@@ -188,12 +219,11 @@ const MapPage: React.FC = () => {
                 plan: L.Routing.plan(waypoints, {
                     draggableWaypoints: false,
                     addWaypoints: false,
-                    createMarker: () => false, // Không tạo marker
+                    createMarker: () => false,
                 }),
             }).addTo(mapRef.current);
 
-            setRoutingControl(control); // Lưu control mới vào state
-
+            setRoutingControl(control);
         }
     };
 
@@ -236,15 +266,6 @@ const MapPage: React.FC = () => {
             setIsConnect(false)
         }
     }, [mapConnection])
-
-
-    useEffect(() => {
-        shareLocation({
-            clientGmail: gmail,
-            clientLocation: position,
-            targetUsers: mapConnection
-        })
-    }, [position])
 
     return (
         <IonPage>
