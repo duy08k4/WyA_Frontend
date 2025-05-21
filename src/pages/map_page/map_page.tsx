@@ -35,18 +35,15 @@ import { useCache } from "../../hooks/cache/cache";
 import { cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
 import { useToast } from "../../hooks/toastMessage/toast";
 
-const customIcon = new L.Icon({
-    iconUrl: 'https://png.pngtree.com/png-clipart/20230805/original/pngtree-map-marker-flat-red-color-icon-ui-position-placement-vector-picture-image_9756810.png',  // Đường dẫn đến biểu tượng
-    iconSize: [32, 41],  // Kích thước của biểu tượng
-    iconAnchor: [16, 32],  // Chân của biểu tượng sẽ nằm ở đâu
-    popupAnchor: [0, -41],  // Vị trí popup sẽ xuất hiện
-});
+// Client marker
+const clientMarker = `
+    <div class="clientMarker"></div>
+`
 
-const customTargetIcon = new L.Icon({
-    iconUrl: 'https://freecharitycars.org/wp-content/uploads/2019/11/car-e1641849287424.png',  // Đường dẫn đến biểu tượng
-    iconSize: [32, 41],  // Kích thước của biểu tượng
-    iconAnchor: [16, 32],  // Chân của biểu tượng sẽ nằm ở đâu
-    popupAnchor: [0, -41],  // Vị trí popup sẽ xuất hiện
+const customIcon = L.divIcon({
+    // iconUrl: 'https://png.pngtree.com/png-clipart/20230805/original/pngtree-map-marker-flat-red-color-icon-ui-position-placement-vector-picture-image_9756810.png',  // Đường dẫn đến biểu tượng
+    className: "client__customMarker",
+    html: clientMarker,
 });
 
 const MapPage: React.FC = () => {
@@ -55,6 +52,7 @@ const MapPage: React.FC = () => {
     const [isConnect, setIsConnect] = useState<boolean>(false)
     const [haveConnection, setHaveConnection] = useState<boolean>(false)
     const [isRouting, setIsRouting] = useState<boolean>(false)
+    const [isNewShareLocationRequest, setIsNewShareLocationRequest] = useState<boolean>(false)
     const [routingControl, setRoutingControl] = useState<L.Routing.Control | null>(null);
     const [routes, setRoutes] = useState<any[]>([]);
     const [userRouting, setUserRouting] = useState<string>("")
@@ -66,6 +64,7 @@ const MapPage: React.FC = () => {
     const interactionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [path, setPath] = useState<[number, number][]>([]); // Position history
     const [position, setPosition] = useState<[number, number]>([10.8231, 106.6297]);
+    const [oldPosition, setOldPosition] = useState<[number, number]>([0, 0]);
     const [isUserInteracting, setIsUserInteracting] = useState(false);
 
     // Custom hook
@@ -83,10 +82,24 @@ const MapPage: React.FC = () => {
 
     const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline)
     const targetLocation = useSelector((state: RootState) => state.userLocation.targetLocation)
+    const shareLocationRequest = useSelector((state: RootState) => state.userLocation.shareLocationRequest)
 
     // Function
     const calculateRoute = useRef<(targetPosition: [number, number]) => void>(() => { })
     const clearRoute = useRef<() => void>(() => { })
+    const haversineDistance = useRef( // Calculate Distance (haversine)
+        ([lat1, lon1]: [number, number], [lat2, lon2]: [number, number]): number => {
+            const R = 6371000; // Bán kính Trái Đất (km)
+            const toRad = (deg: number) => deg * Math.PI / 180;
+
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) ** 2;
+
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        })
 
     // Handlers
     const handleCloseMenu = () => {
@@ -131,6 +144,11 @@ const MapPage: React.FC = () => {
         }
     }, [listUserOnline])
 
+    useEffect(() => {
+        const newRequest = shareLocationRequest.filter(request => request.type === "receiver")
+        setIsNewShareLocationRequest(newRequest.length != 0 ? true : false)
+    }, [shareLocationRequest])
+
     const handleCloseRoutingTargetUser = () => {
         clearRoute.current()
     }
@@ -138,6 +156,8 @@ const MapPage: React.FC = () => {
     const handleDirection = () => {
         redirect.push("/")
     }
+
+    // Calculate Distance
 
 
     // Map
@@ -157,9 +177,9 @@ const MapPage: React.FC = () => {
                         coordinates.coords.latitude,
                         coordinates.coords.longitude
                     ]
-
+                    setOldPosition(position)
                     setPosition(newPosition)
-                    
+
                     if (mapRef.current) {
                         mapRef.current.setView(newPosition, mapRef.current.getZoom())
                     }
@@ -183,12 +203,29 @@ const MapPage: React.FC = () => {
     }, [mapConnection])
 
     useEffect(() => {
-        shareLocation({
-            clientGmail: gmail,
-            clientLocation: position,
-            targetUsers: mapConnection
-        })
+        const distance = haversineDistance.current(oldPosition, position)
+        if (distance >= 0.005) {
+            shareLocation({
+                clientGmail: gmail,
+                clientLocation: position,
+                targetUsers: mapConnection
+            })
+            
+            // calculateRoute.current(position)
+        }
+
     }, [position])
+
+    const createTargetMarker = (avartarCode: string) => {
+        const targetMarker = `
+            <div class=""></div>
+        `
+
+        return L.divIcon({
+            className: "target__customMarker",
+            html: targetMarker,
+        })
+    }
 
 
     // Routing
@@ -328,7 +365,7 @@ const MapPage: React.FC = () => {
                         {mapConnection.map((connection, index) => {
                             const connectionGmail = connection.gmail
                             if (targetLocation[btoa(connectionGmail)]) {
-                                return <Marker key={index} position={targetLocation[btoa(connectionGmail)]} icon={customTargetIcon} ref={markerRef}></Marker>
+                                return <Marker key={index} position={targetLocation[btoa(connectionGmail)]} icon={createTargetMarker(connection.avartarCode)} ref={markerRef}></Marker>
                             }
                         })}
 
@@ -339,6 +376,9 @@ const MapPage: React.FC = () => {
 
                 <div className="mapPage__mainButtonContainer">
                     <button className="mapPage__mainButtonContainer--button mapPage__mainButtonContainer--button--advancedMenu" onClick={handleCloseMenu}>
+                        {!isNewShareLocationRequest ? "" : (
+                            <p className="mapPage__mainButtonContainer--button--announce">!</p>
+                        )}
                         <i className="fas fa-ellipsis-h"></i>
                     </button>
 

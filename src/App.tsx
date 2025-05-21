@@ -136,17 +136,6 @@ const AppPage: React.FC = () => {
     }
   }, [listFriends.length, gmail])
 
-  // Get friend active Status
-  // useEffect(() => {
-  //   if (listFriends && listFriends.length != 0) {
-  //     enableListener_userLocation_listUserOnline(gmail)
-  //   }
-  // }, [listFriends.length])
-
-  // useEffect(() => {
-  //   cacheSetData(cacheSetFullUserInformation(userData))
-  // }, [userData])
-
   return (
     <IonApp>
       <IonRouterOutlet>

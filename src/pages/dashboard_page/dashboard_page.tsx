@@ -28,6 +28,7 @@ import { useCache } from "../../hooks/cache/cache";
 const DashboardPage: React.FC = () => {
     // State
     const [isNewMessage, setIsNewMessage] = useState<boolean>(false)
+    const [isNewShareLocationRequest, setIsNewShareLocationRequest] = useState<boolean>(false)
     const redirect = useHistory()
 
     // Custom hook
@@ -37,6 +38,7 @@ const DashboardPage: React.FC = () => {
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
     const username = useSelector((state: RootState) => state.userInformation.username)
     const amountNewChat = useSelector((state: RootState) => state.userChat.amountNewChat)
+    const shareLocationRequest = useSelector((state: RootState) => state.userLocation.shareLocationRequest)
 
     // Handlers
     const handleDirection = (endtryPoint: string) => {
@@ -54,6 +56,11 @@ const DashboardPage: React.FC = () => {
     const test = () => {
         
     }
+
+    useEffect(() => {
+        const newRequest = shareLocationRequest.filter(request => request.type === "receiver")
+        setIsNewShareLocationRequest(newRequest.length != 0 ? true: false)
+    }, [shareLocationRequest])
 
     return (
         <IonPage>
@@ -79,6 +86,9 @@ const DashboardPage: React.FC = () => {
 
                     <div className="dashboard__menu__listFuncs">
                         <div className="dashboard__menu__func dashboard__menu__func--map" onClick={() => handleDirection("map")}>
+                            {!isNewShareLocationRequest ? "" : (
+                                <p className="dashboard__menu__func--amount">!</p>
+                            )}
                             <img src={mapIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Map</p>
                         </div>

@@ -4,6 +4,7 @@ import "./About__team.css";
 import NTMU from "../../assets/avt_myuyen.png"
 import TBTD from "../../assets/avt_tuongduy.png"
 import DPT from "../../assets/avt_phutrong.png"
+import NAT from "../../assets/avt_anhtuan.jpg"
 
 const AboutTeam:React.FC = () => {
 
@@ -26,6 +27,12 @@ const AboutTeam:React.FC = () => {
       role: "Developer & Designer",
       description: "Focused on frontend development and user interface design. Participated in building responsive web interfaces, improving user experience, and implementing interactive features.",
       image: NTMU,
+    },
+    {
+      name: "Nguyen Anh Tuan",
+      role: "Developer & Designer",
+      description: "Focused on frontend development and user interface design. Participated in building responsive web interfaces, improving user experience, and implementing interactive features.",
+      image: NAT,
     }
   ]
 

@@ -28,7 +28,7 @@
     border-radius: 20px;
     border-bottom: 1px solid #808080;
     box-shadow: 0 0 10px rgba(128, 128, 128, 0.25);
-    transition:  all ease-in-out .5s;
+    transition: all ease-in-out .5s;
 }
 
 .mainPage__searchBox.noCnnection {
@@ -104,16 +104,16 @@
     border-radius: 50%;
     border: solid 1px lime;
     flex-shrink: 0;
-    
+
     img {
         width: 100%;
         height: 100%;
     }
-    
+
 }
 
 .mainPage__searchBox__avatarBox:nth-child(n + 2) {
-    transform: translate(calc(40% * (var(--n) - 1)), -50%); 
+    transform: translate(calc(40% * (var(--n) - 1)), -50%);
 }
 
 .mainPage__searchBox__avatarBox.mainPage__searchBox__avatarBoxLast::after {
@@ -219,6 +219,7 @@
     gap: 40px;
 
     button {
+        position: relative;
         height: 10px;
         width: 10px;
         display: flex;
@@ -227,6 +228,21 @@
         font-size: 18px;
         padding: 26px;
         border-radius: 20px;
+    }
+
+    .mapPage__mainButtonContainer--button--announce {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-30%, -30%);
+        height: 5px;
+        width: 5px;
+        background-color: red;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        border-radius: 50%;
     }
 }
 
@@ -269,4 +285,52 @@
 
 .leaflet-routing-container {
     display: none;
+}
+
+/* Custom marker */
+/* Client */
+.client__customMarker {
+    .clientMarker {
+        position: relative;
+        height: 20px;
+        width: 20px;
+        background-color: #1E90FF;
+        border-radius: 50%;
+    }
+
+    .clientMarker::after {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 25px;
+        width: 25px;
+        animation: clientMarkerEffect 0.5s ease-in-out alternate infinite;
+    }
+}
+
+/* Target */
+.target__customMarker {
+    
+}
+
+
+
+@keyframes clientMarkerEffect {
+    from {
+        height: 25px;
+        width: 25px;
+        background-color: transparent;
+        border-radius: 50%;
+        border: 1px solid #1E90FF;
+    }
+
+    to {
+        height: 30px;
+        width: 30px;
+        background-color: transparent;
+        border-radius: 50%;
+        border: 1px solid #1E90FF;
+    }
 }

@@ -165,6 +165,7 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
         subscribe_userLocation_listUserOnline.current = onSnapshot(doc(db, "userActiveStatus", btoa(clientGmail)), (doc) => {
             const data = doc.data()
             if (data) {
+                console.log(data)
                 cacheSetData(cacheSetUserLocation_listUserOnline(data))
             }
         })

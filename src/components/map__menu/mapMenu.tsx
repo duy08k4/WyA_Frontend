@@ -22,11 +22,13 @@ import { useSpinner } from "../../hooks/spinner/spinner";
 import "leaflet/dist/leaflet.css";
 import "./mapMenu.css";
 
-const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
+const MapMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) => {
     // States
     const menuForm = useRef<HTMLDivElement>(null)
     const [chooseFriend, setChooseFriend] = useState<boolean>(true)
     const [chooseRequest, setChooseRequest] = useState<boolean>(false)
+    const [isNewShareLocationRequest, setIsNewShareLocationRequest] = useState<boolean>(false)
+    const [doConnection, setDoConnection] = useState<boolean>(false)
 
     // Custom hook
     const { addToast } = useToast()
@@ -47,6 +49,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
     const username = useSelector((state: RootState) => state.userInformation.username)
     const avartarCode = useSelector((state: RootState) => state.userInformation.avartarCode)
     const listRequestShareLocation = useSelector((state: RootState) => state.userLocation.shareLocationRequest)
+    const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
 
     // Handlers
     const handleChooseFriend = () => {
@@ -61,6 +64,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
 
     const handleIsConnect = async (targetGmail: string) => {
         const targetUserInfo = listFriends.find(friend => friend.gmail === targetGmail)
+        openSpinner()
 
         if (targetUserInfo) {
             await sendRequestShareLocation({
@@ -77,6 +81,9 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
                         content: `Sent request to ${targetGmail}`,
                         duration: 3
                     })
+
+                    setDoConnection(true)
+                    closeSpinner()
                 }
             }).catch((error) => {
                 console.error(error)
@@ -85,6 +92,8 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
                     content: "Can't send request",
                     duration: 3
                 })
+                setDoConnection(false)
+                closeSpinner()
             })
         }
     }
@@ -125,7 +134,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
     }
 
     const handleAcceptRequest = async (request: interface__MapPage__RequestShareLocation) => {
-        console.log(request)
+        openSpinner()
         const dataForAccept = {
             clientGmail: gmail,
             clientName: username,
@@ -136,7 +145,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
         }
 
         await acceptRequestShareLocation(dataForAccept).then((data) => {
-           // ... 
+            closeSpinner()
         }).catch((err) => {
             console.log(err)
             addToast({
@@ -144,6 +153,8 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
                 content: `Can't process your action`,
                 duration: 3
             })
+
+            closeSpinner()
         })
     }
 
@@ -195,6 +206,11 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
         }
     }, [listRequestShareLocation])
 
+    useEffect(() => {
+        const newRequest = listRequestShareLocation.filter(request => request.type === "receiver")
+        setIsNewShareLocationRequest(newRequest.length != 0 ? true : false)
+    }, [listRequestShareLocation])
+
     return (
         <div className="mapAdvancedMenu">
             <div className="menuForm" ref={menuForm}>
@@ -204,7 +220,10 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
                     </button>
 
                     <button className={`menuForm__tab ${chooseRequest ? "chosen" : ""} menuForm__tab--request`} onClick={handleChooseRequest}>
-                        Request ({listRequest.length + listPendingRequest.length})
+                        {!isNewShareLocationRequest ? "" : (
+                            <p className="menuForm__tab--announce">!</p>
+                        )}
+                        Request ({listRequest.length})
                     </button>
                 </div>
 
@@ -214,10 +233,9 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
                         <div className="menuShowcase--child menuShowcase--friend">
                             {userOnline.length === 0 ? "" : (
                                 userOnline.map((user, index) => {
-                                    const userStatus = listRequestShareLocation.find(friend => friend.gmail == user.gmail)
-                                    // let userStatus = undefined
-                                    console.log(userStatus)
-                                    
+                                    const isSendRequest = listRequestShareLocation.find(friend => friend.gmail == user.gmail)
+                                    const isConnect = mapConnection.find(connection => connection.gmail == user.gmail)
+
                                     return (
                                         <div key={index} className="menu--item">
                                             <div className="menu--user">
@@ -228,7 +246,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({closeMenu }) => {
                                                 <p className="menu__name">{user.username}</p>
                                             </div>
 
-                                            {userStatus ? "" : (
+                                            {isSendRequest || isConnect ? "" : (
                                                 <button className="menu__button" onClick={() => { handleIsConnect(user.gmail) }}>Connect</button>
                                             )}
                                         </div>

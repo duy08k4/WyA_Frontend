@@ -22,7 +22,7 @@ const AboutTech: React.FC = () => {
   return (
     <div className="aboutTech">
       {technology.map((document, index) => (
-        <div className="aboutTech__introduction">
+        <div key={index} className="aboutTech__introduction">
           <h4 className="aboutTech__introduction--title">{document.title}</h4>
 
           <ul>

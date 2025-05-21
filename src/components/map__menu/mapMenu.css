@@ -37,11 +37,31 @@
     width: 50%;
     color: black;
     background-color: #eeeeee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    .menuForm__tab--announce {
+        height: 5px;
+        width: 5px;
+        color: white;
+        background-color: red;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        border-radius: 50%;
+    }
 }
 
 .menuForm__tab.chosen {
     font-weight: bold;
     background-color: white;
+
+    .menuForm__tab--announce {
+        display: none;
+    }
 }
 
 .menuForm__tab--friend {

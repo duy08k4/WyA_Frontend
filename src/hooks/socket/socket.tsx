@@ -65,9 +65,10 @@ export const SocketProvider: React.FC<interface__socketProviderProps> = ({ child
     }, [listUserOnline])
 
     useEffect(() => {
-        const socket = io(import.meta.env.VITE_SERVER_GATE, {
+        const socket = io(import.meta.env.VITE_SOCKET_GATE, {
             transports: ["websocket"],
             withCredentials: true,
+            reconnection: false
         });
 
         socketRef.current = socket;
