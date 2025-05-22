@@ -12,6 +12,9 @@ import { useSpinner } from "../../hooks/spinner/spinner";
 // Import services
 import sendOTP from "../../services/send_OTP.serv";
 
+// Import images
+import avartarApp from "../../assets/logo.png"
+
 // Import css
 import "./register_page.css"
 import "../../main.css"
@@ -191,7 +194,7 @@ const RegisterPage: React.FC = () => {
             <div className="registerPage">
                 <div className="registerPage__registerForm">
                     <div className="registerPage__element registerPage__element--headerBox">
-                        <img className="registerPage__header--icon" src="src/assets/logo.png" alt="Logo" />
+                        <img className="registerPage__header--icon" src={avartarApp} alt="Logo" />
                         <h1 className="registerPage__header--content">Come join us</h1>
                     </div>
 

@@ -8,9 +8,12 @@ import { useHistory } from "react-router";
 // Import custom hooks
 import { useCache } from "../../hooks/cache/cache";
 import { useSocket } from "../../hooks/socket/socket";
+import { useToast } from "../../hooks/toastMessage/toast";
+import { useSpinner } from "../../hooks/spinner/spinner";
 
 // Import services
 import logoutAccount from "../../services/logout_account";
+import { changeData, deleteAccount, deleteAccount__sendVerifyCode } from "../../services/changeData.serv";
 
 // Import redux
 import { useSelector } from "react-redux";
@@ -19,14 +22,10 @@ import { RootState } from "../../redux/store";
 // Import css
 import "./profile_page.css"
 import "../../main.css"
-import { useToast } from "../../hooks/toastMessage/toast";
 
 const ProfilePage: React.FC = () => {
     // States
-    const [activeModal, setActiveModal] = useState<'name' | 'email' | 'password' | 'delete' | 'avatar' | 'signout' | null>(null);
-    const [newName, setNewName] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [newEmail, setNewEmail] = useState("");
+    const [activeModal, setActiveModal] = useState<'name' | 'password' | 'delete' | 'signout' | null>(null);
     const redirect = useHistory()
     const modalRef = useRef<HTMLDivElement>(null);
 
@@ -34,22 +33,49 @@ const ProfilePage: React.FC = () => {
     const { disableListener_userInformation } = useCache()
     const { setStatusWhenLogout } = useSocket()
     const { addToast } = useToast()
+    const { openSpinner, closeSpinner } = useSpinner()
 
     // Redux
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+    const clientName = useSelector((state: RootState) => state.userInformation.username)
+
+    // Data
+    const [newName, setNewName] = useState<string>("");
+    const [newPassword, setNewPassword] = useState<string>("");
+    const [inputPassword, setInputPassword] = useState<string>("")
+    const [deleteAccountVerifyCode, setDeleteAccountVerifyCode] = useState<string>("")
 
     // Handlers
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewName(e.target.value);
-    };
+    const sendVerifyCodeDeleteAccount = async () => {
+        openSpinner()
+        await deleteAccount__sendVerifyCode({
+            client_mail: gmail,
+        }).then((data) => {
+            if (data.status == 200) {
+                addToast({
+                    typeToast: "s",
+                    content: data.data.mess,
+                    duration: 5
+                })
+            } else {
+                addToast({
+                    typeToast: "e",
+                    content: data.data.mess,
+                    duration: 5
+                })
+            }
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewPassword(e.target.value);
-    };
-
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewEmail(e.target.value);
-    };
+            closeSpinner()
+        }).catch((err) => {
+            console.log(err)
+            addToast({
+                typeToast: "e",
+                content: "Can't send",
+                duration: 5
+            })
+            closeSpinner()
+        })
+    }
 
     const handleDirection = () => {
         redirect.push("/")
@@ -77,27 +103,98 @@ const ProfilePage: React.FC = () => {
         setActiveModal(null);
         setNewName("");
         setNewPassword("");
-        setNewEmail("");
+        setInputPassword("")
+        setDeleteAccountVerifyCode("")
     };
 
     const handleSubmit = async () => {
+        openSpinner()
         switch (activeModal) {
             case 'name':
-                console.log("New name:", newName);
-                console.log("Verification password:", newPassword);
-                break;
+                if (gmail && inputPassword && newName) {
+                    if (newName == clientName) {
+                        addToast({
+                            typeToast: "w",
+                            content: "Please enter another name",
+                            duration: 5
+                        })
+                    } else {
+                        await changeData({
+                            typeChange: "changeName",
+                            client_mail: gmail,
+                            client_password: inputPassword,
+                            client_newName: newName
+                        }).then((data) => {
+                            if (data.status == 200) {
+                                addToast({
+                                    typeToast: "s",
+                                    content: "Changed name",
+                                    duration: 5
+                                })
+                            } else {
+                                addToast({
+                                    typeToast: "e",
+                                    content: "Can't change",
+                                    duration: 5
+                                })
+                            }
+                        }).catch((err) => {
+                            console.error(err)
+                            addToast({
+                                typeToast: "e",
+                                content: "Can't change",
+                                duration: 5
+                            })
+                        })
+                    }
+                } else {
+                    addToast({
+                        typeToast: "e",
+                        content: "Can't change",
+                        duration: 5
+                    })
+                }
 
-            case 'email':
-                console.log("New email:", newEmail);
-                console.log("Verification password:", newPassword);
                 break;
 
             case 'password':
-                console.log("New password:", newPassword);
-                break;
+                if (gmail && inputPassword && newPassword) {
+                    await changeData({
+                        typeChange: "changePasword",
+                        client_mail: gmail,
+                        client_password: inputPassword,
+                        client_newPassword: newPassword
+                    }).then((data) => {
+                        if (data.status == 200) {
+                            addToast({
+                                typeToast: "s",
+                                content: data.data.mess,
+                                duration: 5
+                            })
+                        } else {
+                            addToast({
+                                typeToast: "e",
+                                content: data.data.mess,
+                                duration: 5
+                            })
+                        }
+                    }).catch((err) => {
+                        console.error(err)
+                        addToast({
+                            typeToast: "e",
+                            content: "Can't change",
+                            duration: 5
+                        })
+                    })
 
-            case 'avatar':
-                console.log("Changed avatar");
+                } else {
+                    addToast({
+                        typeToast: "e",
+                        content: "Can't change",
+                        duration: 5
+                    })
+                }
+
                 break;
 
             case 'signout':
@@ -117,8 +214,33 @@ const ProfilePage: React.FC = () => {
                     })
                 })
 
+                break;
+
             case 'delete':
-                console.log("Account deletion confirmed");
+                await deleteAccount({
+                    client_mail: gmail,
+                    verifyCode: deleteAccountVerifyCode
+                }).then((data) => {
+                    if (data.status == 200) {
+                        closeSpinner()
+
+                    } else {
+                        addToast({
+                            typeToast: "e",
+                            content: "Can't delete account",
+                            duration: 5
+                        })
+                        closeSpinner()
+                    }
+                }).catch((err) => {
+                    console.log(err)
+                    addToast({
+                        typeToast: "e",
+                        content: "Can't delete account",
+                        duration: 5
+                    })
+                    closeSpinner()
+                })
                 break;
         }
         closeModal();
@@ -135,7 +257,7 @@ const ProfilePage: React.FC = () => {
                                 type="text"
                                 placeholder="New name..."
                                 value={newName}
-                                onChange={handleNameChange}
+                                onChange={(e) => { setNewName(e.target.value); }}
                                 className="modal__input"
                             />
                         </div>
@@ -145,39 +267,14 @@ const ProfilePage: React.FC = () => {
                             <input
                                 type="password"
                                 placeholder="Verify password..."
-                                value={newPassword}
-                                onChange={handlePasswordChange}
+                                value={inputPassword}
+                                onChange={(e) => { setInputPassword(e.target.value) }}
                                 className="modal__input"
                             />
                         </div>
                     </>
                 );
-            case 'email':
-                return (
-                    <>
-                        <div className="modal__input--group">
-                            <i className="fa-solid fa-envelope modal__icon"></i>
-                            <input
-                                type="email"
-                                placeholder="New email..."
-                                value={newEmail}
-                                onChange={handleEmailChange}
-                                className="modal__input"
-                            />
-                        </div>
 
-                        <div className="modal__input--group">
-                            <i className="fa-solid fa-fingerprint modal__icon"></i>
-                            <input
-                                type="password"
-                                placeholder="Verify password..."
-                                value={newPassword}
-                                onChange={handlePasswordChange}
-                                className="modal__input"
-                            />
-                        </div>
-                    </>
-                );
             case 'password':
                 return (
                     <>
@@ -186,51 +283,42 @@ const ProfilePage: React.FC = () => {
                             <input
                                 type="password"
                                 placeholder="Password..."
+                                value={inputPassword}
+                                onChange={(e) => { setInputPassword(e.target.value) }}
+                                className="modal__input"
+                            />
+                        </div>
+
+                        <div className="modal__input--group">
+                            <i className="fa-solid fa-fingerprint modal__icon"></i>
+                            <input
+                                type="password"
+                                placeholder="New password..."
+                                className="modal__input"
                                 value={newPassword}
-                                onChange={handlePasswordChange}
-                                className="modal__input"
-                            />
-                        </div>
-
-                        <div className="modal__input--group">
-                            <i className="fa-solid fa-fingerprint modal__icon"></i>
-                            <input
-                                type="password"
-                                placeholder="Confirm password..."
-                                className="modal__input"
-                            />
-                        </div>
-
-                        <div className="modal__input--group">
-                            <i className="fa-solid fa-fingerprint modal__icon"></i>
-                            <input
-                                type="password"
-                                placeholder="Verify password..."
-                                className="modal__input"
+                                onChange={(e) => { setNewPassword(e.target.value) }}
                             />
                         </div>
                     </>
                 );
+
             case 'delete':
                 return (
                     <div className="modal__delete">
                         <h2 className="modal__title">YOUR DECISION</h2>
                         <div className="modal__verify-code">
-                            <input type="text" placeholder="Verify code" className="modal__input modal__input--verify" />
+                            <input type="number" placeholder="Verify code"
+                                className="modal__input modal__input--verify"
+                                value={deleteAccountVerifyCode}
+                                onChange={(e) => { setDeleteAccountVerifyCode(e.target.value) }}
+                            />
                         </div>
 
                         <div className="modal__actions">
-                            <button className="modal__button modal__button--sendCode">Send code</button>
+                            <button className="modal__button modal__button--sendCode" onClick={sendVerifyCodeDeleteAccount}>Send code</button>
 
                             <button className="modal__button modal__button--delete" onClick={handleSubmit}>Delete</button>
                         </div>
-                    </div>
-                );
-
-            case 'avatar':
-                return (
-                    <div className="modal__avatar">
-                        hahai
                     </div>
                 );
 
@@ -263,19 +351,9 @@ const ProfilePage: React.FC = () => {
                         <p className="settings__item--text">Change your name</p>
                     </button>
 
-                    <button className="settings__item" onClick={() => setActiveModal("email")}>
-                        <i className="fa-solid fa-envelope settings__item--icon"></i>
-                        <p className="settings__item--text">Change your gmail</p>
-                    </button>
-
                     <button className="settings__item" onClick={() => setActiveModal("password")}>
                         <i className="fa-solid fa-lock settings__item--icon"></i>
                         <p className="settings__item--text">Change your password</p>
-                    </button>
-
-                    <button className="settings__item" onClick={() => setActiveModal("avatar")}>
-                        <i className="fas fa-image settings__item--icon"></i>
-                        <p className="settings__item--text">Change your avartar</p>
                     </button>
 
                     <button className="settings__item" onClick={() => setActiveModal("signout")}>

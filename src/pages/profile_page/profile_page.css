@@ -1,9 +1,15 @@
 .settings {
     height: 100%;
-    background-color: #ffffff; 
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
     padding: 30px;
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 }
 
 .settings__header {
@@ -20,7 +26,7 @@
 }
 
 .settings__back--button {
-    color: #000; 
+    color: #000;
     font-size: 24px;
     background: transparent !important;
     display: flex;
@@ -30,7 +36,7 @@
 }
 
 .settings__back--icon {
-    font-size: 24px; 
+    font-size: 24px;
 }
 
 .settings__title {
@@ -62,10 +68,11 @@
 
 .settings__item:nth-last-child(2) {
     border: none;
+
     i {
         color: #BD1B23;
     }
-    
+
     p {
         color: #BD1B23;
     }
@@ -80,11 +87,11 @@
 .settings__item--text {
     color: #808080;
     font-size: 14px;
-    font-weight: 400; 
+    font-weight: 400;
 }
 
 .settings__item--delete {
-    text-align:center;
+    text-align: center;
     height: fit-content !important;
     width: 100%;
     font-size: 16px;
@@ -100,11 +107,11 @@
 }
 
 .settings__item--textdelete {
-    color: #BD1B23; 
+    color: #BD1B23;
 }
 
 .settings__item--delete .settings__item--icon {
-    color: #BD1B23; 
+    color: #BD1B23;
 }
 
 .modal {
@@ -246,7 +253,7 @@
 .modal__input--verify {
     text-align: center;
     font-size: 14px;
-    color: rgba(128, 128, 128, 1);
+    color: black;
     border-radius: 25px;
     border: 1px solid rgba(128, 128, 128, 0.25);
 }

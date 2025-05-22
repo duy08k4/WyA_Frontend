@@ -13,6 +13,9 @@ import { cacheSetGmail } from "../../redux/reducers/user.reducer";
 // Import services
 import loginAccount from "../../services/login_account.serv";
 
+// Import images
+import avartarApp from "../../assets/logo.png"
+
 // Import css
 import "./login_page.css"
 import "../../main.css"
@@ -120,7 +123,7 @@ export default function LoginPage() {
             <div className="loginPage">
                 <div className="loginPage__loginForm">
                     <div className="loginPage__element loginPage__element--headerBox">
-                        <img className="loginPage__header--icon" src="src/assets/logo.png" alt="Logo" />
+                        <img className="loginPage__header--icon" src={avartarApp} alt="Logo" />
                         <h1 className="loginPage__header--content">Welcome to WyA</h1>
                     </div>
 
