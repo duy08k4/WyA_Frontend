@@ -220,7 +220,7 @@ const RegisterPage: React.FC = () => {
                         <div className="registerPage__inputContainer registerPage__inputContainer--password">
                             <div className="registerPage__inputBox">
                                 <i className="fa-solid fa-fingerprint inputPasswordIcon"></i>
-                                <input className="registerPage__input" type="text" onChange={(e) => { setPassword(e.target.value) }} value={password} placeholder="Password..." />
+                                <input className="registerPage__input" type="password" onChange={(e) => { setPassword(e.target.value) }} value={password} placeholder="Password..." />
                             </div>
 
                             <p className="registerPage__announce">{errorPassword}</p>
@@ -229,7 +229,7 @@ const RegisterPage: React.FC = () => {
                         <div className="registerPage__inputContainer registerPage__inputContainer--confirmPassword">
                             <div className="registerPage__inputBox">
                                 <i className="fa-solid fa-fingerprint inputConfirmPasswordIcon"></i>
-                                <input className="registerPage__input" type="text" onChange={(e) => { setConfirmPassword(e.target.value) }} value={confirmPassword} placeholder="Confirm password..." />
+                                <input className="registerPage__input" type="password" onChange={(e) => { setConfirmPassword(e.target.value) }} value={confirmPassword} placeholder="Confirm password..." />
                             </div>
 
                             <p className="registerPage__announce">{errorConfirmPassword}</p>

@@ -35,6 +35,7 @@ import DashboardPage from './pages/dashboard_page/dashboard_page';
 import MapPage from './pages/map_page/map_page';
 import LoginPage from './pages/login_page/login_page';
 import RegisterPage from './pages/register_page/register_page';
+import ForgotPassword from './pages/forgotpassword_page/forgotpassword_page';
 
 // Import services
 import checkAccess from './services/checkAccess.serv';
@@ -107,13 +108,13 @@ const AppPage: React.FC = () => {
         if (data.status == 200) {
           const gmail = data.data.user.gmail
 
-          if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
+          if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register" || pageLocation.pathname === "/forgotpassword") {
             redirect.push("/")
           }
 
           enableListener_userInformation(gmail)
         } else {
-          if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register") {
+          if (pageLocation.pathname === "/login" || pageLocation.pathname === "/register" || pageLocation.pathname === "/forgotpassword") {
             cacheSetData(cacheSetDefaultUserInformation())
           } else {
             cacheSetData(cacheSetDefaultUserInformation())
@@ -148,6 +149,7 @@ const AppPage: React.FC = () => {
         <Route exact path="/map" component={MapPage} />
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/register" component={RegisterPage} />
+        <Route exact path="/forgotpassword" component={ForgotPassword} />
       </IonRouterOutlet>
     </IonApp>
   )

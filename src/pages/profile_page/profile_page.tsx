@@ -155,6 +155,8 @@ const ProfilePage: React.FC = () => {
                     })
                 }
 
+                closeSpinner()
+
                 break;
 
             case 'password':
@@ -195,6 +197,7 @@ const ProfilePage: React.FC = () => {
                     })
                 }
 
+                closeSpinner()
                 break;
 
             case 'signout':
@@ -214,6 +217,7 @@ const ProfilePage: React.FC = () => {
                     })
                 })
 
+                closeSpinner()
                 break;
 
             case 'delete':
@@ -222,15 +226,13 @@ const ProfilePage: React.FC = () => {
                     verifyCode: deleteAccountVerifyCode
                 }).then((data) => {
                     if (data.status == 200) {
-                        closeSpinner()
-
+                        redirect.push("/login")
                     } else {
                         addToast({
                             typeToast: "e",
                             content: "Can't delete account",
                             duration: 5
                         })
-                        closeSpinner()
                     }
                 }).catch((err) => {
                     console.log(err)
@@ -239,8 +241,9 @@ const ProfilePage: React.FC = () => {
                         content: "Can't delete account",
                         duration: 5
                     })
-                    closeSpinner()
                 })
+                
+                closeSpinner()
                 break;
         }
         closeModal();

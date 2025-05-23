@@ -148,7 +148,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="loginPage__forgotPasswordBox">
-                            <a className="loginPage__forgotPasswordBox--forgotPasswordDirection" href="#">Forgot password?</a>
+                            <a className="loginPage__forgotPasswordBox--forgotPasswordDirection" href="/forgotpassword">Forgot password?</a>
                         </div>
                     </div>
 
