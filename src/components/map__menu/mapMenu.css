@@ -179,4 +179,8 @@
     border-radius: 6px;
     font-size: 12px;
     font-weight: normal;
+
+    i {
+        font-size: 14px;
+    }
 }

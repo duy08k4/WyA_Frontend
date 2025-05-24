@@ -240,7 +240,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) => {
                                         <div key={index} className="menu--item">
                                             <div className="menu--user">
                                                 <div className="menu--userAvartar">
-                                                    <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                                                    <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${user.avartarCode}`} alt="Avatar User" />
                                                 </div>
 
                                                 <p className="menu__name">{user.username}</p>
@@ -271,7 +271,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) => {
                                                 <div key={index} className="menu--item--request">
                                                     <div className="menu--user">
                                                         <div className="menu--userAvartar">
-                                                            <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                                                            <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${request.avartarCode}`} alt="Avatar User" />
                                                         </div>
 
                                                         <p className="menu__name">{request.username}</p>
@@ -302,7 +302,7 @@ const MapMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) => {
                                                 <div key={index} className="menu--item--request">
                                                     <div className="menu--user">
                                                         <div className="menu--userAvartar">
-                                                            <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                                                            <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${request.avartarCode}`} alt="Avatar User" />
                                                         </div>
 
                                                         <p className="menu__name">{request.username}</p>

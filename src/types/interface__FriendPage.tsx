@@ -38,10 +38,26 @@ interface interface__FriendPage__connections {
     chatCode: string
 }
 
+interface UserInformation {
+    username: string;
+    gmail: string;
+    uuid: string;
+    avartarCode: string;
+    friends: interface__FriendPage__connections[];
+    requests: interface__FriendPage__friendRequest[];
+    setting: Record<string, any>; // hoặc bạn định nghĩa kiểu cụ thể hơn
+    listChatCode: any[];
+    lastMessage: Record<string, any>;
+    fullFriendInformation: any[];
+    profileStatus: string;
+}
+
+
 export type {
     interface__FriendPage__user,
     interface__FriendPage__friendRequest,
     interface__FriendPage__requestConnection,
     interface__FriendPage__sentRequest,
     interface__FriendPage__connections,
+    UserInformation
 }

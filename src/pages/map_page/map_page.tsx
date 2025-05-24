@@ -8,6 +8,7 @@ import MapResizeHandler from "../../components/map_resizeHandler/MapResizeHandle
 import MapMenu from "../../components/map__menu/mapMenu";
 import MapConnectionMenu from "../../components/map__menu__connection/map__menu__connection";
 import MapRoutingMenu from "../../components/map__menu__routing/map__menu__routing";
+import MapPage__DetailMarker from "../../components/map__detailMarker/map__detailMarker";
 
 // Import css
 import "./map_page.css";
@@ -32,7 +33,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine';
 import 'leaflet-defaulticon-compatibility';
 import { useCache } from "../../hooks/cache/cache";
-import { cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
+import { cacheSetUserLocation_targetGmailForDetail } from "../../redux/reducers/userLocation.reducer";
 import { useToast } from "../../hooks/toastMessage/toast";
 
 // Client marker
@@ -44,6 +45,7 @@ const customIcon = L.divIcon({
     // iconUrl: 'https://png.pngtree.com/png-clipart/20230805/original/pngtree-map-marker-flat-red-color-icon-ui-position-placement-vector-picture-image_9756810.png',  // Đường dẫn đến biểu tượng
     className: "client__customMarker",
     html: clientMarker,
+    iconAnchor: [8, 0]
 });
 
 const MapPage: React.FC = () => {
@@ -52,6 +54,7 @@ const MapPage: React.FC = () => {
     const [isConnect, setIsConnect] = useState<boolean>(false)
     const [haveConnection, setHaveConnection] = useState<boolean>(false)
     const [isRouting, setIsRouting] = useState<boolean>(false)
+    const [showDetailMarker, setShowDetailMarker] = useState<boolean>(false)
     const [isNewShareLocationRequest, setIsNewShareLocationRequest] = useState<boolean>(false)
     const [routingControl, setRoutingControl] = useState<L.Routing.Control | null>(null);
     const [routes, setRoutes] = useState<any[]>([]);
@@ -70,15 +73,18 @@ const MapPage: React.FC = () => {
     // Custom hook
     const { shareLocation } = useSocket()
     const { openSpinner, closeSpinner } = useSpinner()
+    const { cacheSetData } = useCache()
     const { addToast } = useToast()
 
     // Data
+    const targetGmailForShowDetail = useState<string>("")
     const maxAvartarBox = parseInt(import.meta.env.VITE_HEADER_SHOWCASEUSER_MAX_ELEMENT)
 
     // Redux
     const listFriends = useSelector((state: RootState) => state.userInformation.friends)
     const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+    const avartarCode = useSelector((state: RootState) => state.userInformation.avartarCode)
 
     const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline)
     const targetLocation = useSelector((state: RootState) => state.userLocation.targetLocation)
@@ -114,12 +120,23 @@ const MapPage: React.FC = () => {
         setIsRouting(!isRouting)
     }
 
+    const handleCloseShowMarkerDetail = () => {
+        setShowDetailMarker(!showDetailMarker)
+    }
+
     const findMyLocation = () => {
         if (mapRef.current && position) {
             mapRef.current.setView(position, 21)
         }
     }
 
+    // Handle show detail marker
+    const handleShowDetailMarker = (targetGmail_input: string) => {
+        cacheSetData(cacheSetUserLocation_targetGmailForDetail(targetGmail_input))
+        setShowDetailMarker(true)
+    }
+
+    // Handle Routing
     const handleRoutingTargetUser = (targetGmail: string, targetName: string) => {
         const getLocationForRouting = targetLocation[btoa(targetGmail)]
         setUserRouting(targetGmail)
@@ -151,6 +168,11 @@ const MapPage: React.FC = () => {
 
     const handleCloseRoutingTargetUser = () => {
         clearRoute.current()
+        addToast({
+            typeToast: "s",
+            content: "Remove routing",
+            duration: 5
+        })
     }
 
     const handleDirection = () => {
@@ -203,27 +225,32 @@ const MapPage: React.FC = () => {
     }, [mapConnection])
 
     useEffect(() => {
-        const distance = haversineDistance.current(oldPosition, position)
-        if (distance >= 0.005) {
-            shareLocation({
-                clientGmail: gmail,
-                clientLocation: position,
-                targetUsers: mapConnection
-            })
-            
-            // calculateRoute.current(position)
-        }
+        // const distance = haversineDistance.current(oldPosition, position)
+        shareLocation({
+            clientGmail: gmail,
+            clientLocation: position,
+            targetUsers: mapConnection
+        })
 
     }, [position])
 
-    const createTargetMarker = (avartarCode: string) => {
+    const createTargetMarker = (targetAvartarCode: string) => {
         const targetMarker = `
-            <div class=""></div>
+            <div class="targetMarker">
+                <div class="targetMarker__imgBox">
+                    <img src=${`https://api.dicebear.com/8.x/bottts/svg?seed=${targetAvartarCode}`} alt="" />
+                </div>
+                
+                <div class="targetMarker__arrow">
+                
+                </div>
+            </div>
         `
 
         return L.divIcon({
             className: "target__customMarker",
             html: targetMarker,
+            iconAnchor: [27, 57]
         })
     }
 
@@ -324,7 +351,7 @@ const MapPage: React.FC = () => {
                                             style={{ ['--n' as any]: `${index}`, ['--count' as any]: index == maxAvartarBox - 1 ? `"${mapConnection?.length - maxAvartarBox}"` : `""` }}
                                         >
                                             <img
-                                                src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223"
+                                                src={`https://api.dicebear.com/8.x/bottts/svg?seed=${avartarCode}`}
                                                 alt="Avatar user"
                                             />
                                         </div>
@@ -365,7 +392,14 @@ const MapPage: React.FC = () => {
                         {mapConnection.map((connection, index) => {
                             const connectionGmail = connection.gmail
                             if (targetLocation[btoa(connectionGmail)]) {
-                                return <Marker key={index} position={targetLocation[btoa(connectionGmail)]} icon={createTargetMarker(connection.avartarCode)} ref={markerRef}></Marker>
+                                return <Marker
+                                    key={index}
+                                    position={targetLocation[btoa(connectionGmail)]}
+                                    icon={createTargetMarker(connection.avartarCode)} ref={markerRef}
+                                    eventHandlers={{
+                                        click: () => { handleShowDetailMarker(connectionGmail) } 
+                                    }}
+                                ></Marker>
                             }
                         })}
 
@@ -403,6 +437,9 @@ const MapPage: React.FC = () => {
                     <MapRoutingMenu closeMenu={handleCloseMenuRouting} handleRoutingTargetUser={handleRoutingTargetUser} handleCloseRoutingTargetUser={handleCloseRoutingTargetUser} />
                 )}
 
+                {!showDetailMarker ? "" : (
+                    <MapPage__DetailMarker closeMenu={handleCloseShowMarkerDetail} />
+                )}
             </div>
         </IonPage>
     );

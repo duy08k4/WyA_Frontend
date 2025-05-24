@@ -1,5 +1,5 @@
 // Import libraries
-import React, { createContext, useContext, useEffect, useRef } from "react"
+import React, { createContext, useContext, useEffect, useRef, useState } from "react"
 
 // Import interface
 import {
@@ -10,7 +10,7 @@ import {
 
 // Import Redux
 import { cacheSetDefaultChat, cacheSetDefaultMessages, cacheSetDefaultNewMessages, cacheSetLastMessages, cacheSetMessages, cacheSetNewMessages, cacheSetNewMessages_sender, cacheSetRequestRemove, cacheUpdateAmountNewChat } from "../../redux/reducers/chat.reducer"
-import { cacheSetFullUserInformation } from "../../redux/reducers/user.reducer"
+import { cacheSetFullFriendInformation, cacheSetFullUserInformation } from "../../redux/reducers/user.reducer"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../../redux/store"
 
@@ -36,9 +36,13 @@ export const useCache = (): interface__authContext => {
 export const CacheProvider: React.FC<interface__authProviderProps> = ({ children }) => {
     const dispatch = useDispatch<AppDispatch>()
 
+    // State
+    const [listFriend_gmail, setListFriend_gmail] = useState<string[]>([])
+
     // Redux
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
     const chatCode = useSelector((state: RootState) => state.userChat.chatCode)
+    const listFriend = useSelector((state: RootState) => state.userInformation.friends)
     const listChatCode = useSelector((state: RootState) => state.userInformation.listChatCode)
 
     // Storage listener Event
@@ -50,6 +54,7 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
     const subscribe_userLocation_listUserOnline = useRef<(() => void) | undefined>(undefined);
     const subscribe_userLocation_requestShareLocation = useRef<(() => void) | undefined>(undefined);
     const subscribe_userLocation_mapConnection = useRef<(() => void) | undefined>(undefined);
+    const subscribe_userLocation_fullFriendInformation = useRef<(() => void) | undefined>(undefined);
 
     // Custom hook
 
@@ -80,6 +85,18 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
             enableListener_userLocation_mapConnection()
         }
     }, [gmail])
+
+    useEffect(() => {
+        let filterGmail = listFriend.map(friend => friend.gmail)
+        setListFriend_gmail([...filterGmail])
+    }, [listFriend])
+
+    useEffect(() => {
+        if (listFriend_gmail.length > 0) {
+            enableListener_userLocation_fullFriendInformation()
+        }
+
+    }, [listFriend_gmail])
 
     // Listener
     const enableListener_userInformation = (gmailInput: string) => { //Get userInformation
@@ -194,14 +211,26 @@ export const CacheProvider: React.FC<interface__authProviderProps> = ({ children
 
         subscribe_userLocation_mapConnection.current = onSnapshot(doc(db, "mapConnection", btoa(gmail)), (doc) => {
             const data = doc.data()
-            
+
             if (data) {
                 cacheSetData(cacheSetUserLocation_mapConnection(Object.values(data)))
             } else {
-                
+
             }
         })
 
+    }
+
+    const enableListener_userLocation_fullFriendInformation = async () => {
+        const querySnapshot = await getDocs(collection(db, "userInformation"));
+        const gotData = [] as any[]
+        querySnapshot.forEach((val) => {
+            gotData.push(val.data())
+        });
+
+        const filterData = gotData.filter(user => listFriend_gmail.includes(user.gmail))
+
+        cacheSetData(cacheSetFullFriendInformation(filterData))
     }
 
     // Off listener

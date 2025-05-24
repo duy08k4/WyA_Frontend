@@ -28,6 +28,7 @@ import { useCache } from "../../hooks/cache/cache";
 const DashboardPage: React.FC = () => {
     // State
     const [isNewMessage, setIsNewMessage] = useState<boolean>(false)
+    const [isFriendRequest, setIsFriendRequest] = useState<boolean>(false)
     const [isNewShareLocationRequest, setIsNewShareLocationRequest] = useState<boolean>(false)
     const redirect = useHistory()
 
@@ -39,6 +40,8 @@ const DashboardPage: React.FC = () => {
     const username = useSelector((state: RootState) => state.userInformation.username)
     const amountNewChat = useSelector((state: RootState) => state.userChat.amountNewChat)
     const shareLocationRequest = useSelector((state: RootState) => state.userLocation.shareLocationRequest)
+    const avartarCode = useSelector((state: RootState) => state.userInformation.avartarCode)
+    const listFriendRequest = useSelector((state: RootState) => state.userInformation.requests)
 
     // Handlers
     const handleDirection = (endtryPoint: string) => {
@@ -54,13 +57,22 @@ const DashboardPage: React.FC = () => {
     }, [amountNewChat])
 
     const test = () => {
-        
+
     }
 
     useEffect(() => {
         const newRequest = shareLocationRequest.filter(request => request.type === "receiver")
-        setIsNewShareLocationRequest(newRequest.length != 0 ? true: false)
+        setIsNewShareLocationRequest(newRequest.length != 0 ? true : false)
     }, [shareLocationRequest])
+
+    useEffect(() => {
+        const getRequests = listFriendRequest.filter(request => request.type == "receiver")
+        if (getRequests.length > 0) {
+            setIsFriendRequest(true)
+        } else {
+            setIsFriendRequest(false)
+        }
+    }, [listFriendRequest])
 
     return (
         <IonPage>
@@ -69,7 +81,7 @@ const DashboardPage: React.FC = () => {
                 <div className="dashboard__profileCard--container" onClick={test}>
                     <div className="dashboard__profileCard__card">
                         <div className="dashboard__profileCard__imgBox">
-                            <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" className="dashboard__profileCard__imgBox--img" alt="User avartar" />
+                            <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${avartarCode}`} className="dashboard__profileCard__imgBox--img" alt="User avartar" />
                         </div>
 
                         <div className="dashboard__profileCard__infoBox">
@@ -94,6 +106,9 @@ const DashboardPage: React.FC = () => {
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--chat" onClick={() => handleDirection("friend")}>
+                            {!isFriendRequest ? "" : (
+                                <p className="dashboard__menu__func--amount">!</p>
+                            )}
                             <img src={friendIcon} className="dashboard__menu__func--icon" alt="Icon function" />
                             <p className="dashboard__menu__func--title">Connection</p>
                         </div>

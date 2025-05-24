@@ -102,7 +102,6 @@
     overflow: hidden;
     background-color: white;
     border-radius: 50%;
-    border: solid 1px lime;
     flex-shrink: 0;
 
     img {
@@ -304,15 +303,52 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        height: 25px;
-        width: 25px;
+        height: 26px;
+        width: 26px;
         animation: clientMarkerEffect 0.5s ease-in-out alternate infinite;
     }
 }
 
 /* Target */
 .target__customMarker {
-    
+    .targetMarker {
+        height: fit-content;
+        width: fit-content;
+        transform: translate(0,0);
+        display: flex;
+        flex-direction: column;
+        align-items: center ;
+        animation: targetMarkerEffect 2s ease-in  infinite;
+    }
+
+    .targetMarker__imgBox {
+        height: 60px;
+        width: 60px;
+        overflow: hidden;
+        background-color: #3e3f46;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 6px;
+        border-radius: 5px;
+
+        img {
+            height: 100%;
+            width: auto;
+        }
+    }
+
+    .targetMarker__arrow {
+        height: 0;
+        width: 0;
+
+        border: solid 10px;
+        border-top-color: #3e3f46;
+        border-bottom-color: transparent !important;
+        border-right-color: transparent !important;
+        border-left-color: transparent !important;
+        
+    }
 }
 
 
@@ -332,5 +368,35 @@
         background-color: transparent;
         border-radius: 50%;
         border: 1px solid #1E90FF;
+    }
+}
+
+@keyframes targetMarkerEffect {
+    0% {
+        transform: translate(0,0);
+    }
+    
+    25% {
+        transform: translate(0, -5px);
+    }
+
+    50% {
+        transform: translate(0, -6px);
+    }
+
+    55% {
+        transform: translate(0, -6px);
+    }
+
+    75% {
+        transform: translate(0, -6px);
+    }
+
+    80% {
+        transform: translate(0, -5px);
+    }
+    
+    100% {
+        transform: translate(0,0);
     }
 }

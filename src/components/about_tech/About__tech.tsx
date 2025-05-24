@@ -7,11 +7,11 @@ const AboutTech: React.FC = () => {
   const technology = [
     {
       title: "Frontend",
-      listTech: ["Ionic framework", "ReactJS", "Typescript", "Leaflet"]
+      listTech: ["Ionic framework", "React", "Typescript", "Leaflet"]
     },
     {
       title: "Backend",
-      listTech: ["NodeJS", "ExpressJS", "Firebase - Firestore", "MongoDB", "Websocket"]
+      listTech: ["NodeJS - ExpressJS", "Firebase - Firestore", "Websocket"]
     },
     {
       title: "Deployment",

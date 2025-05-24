@@ -13,7 +13,7 @@ import "../../main.css"
 
 // Import deux
 import { RootState } from "../../redux/store";
-import { cacheSetChatCode, cacheSetRequestRemove, cacheSetTargetGmail, cacheSetTargetName } from "../../redux/reducers/chat.reducer";
+import { cacheSetChatCode, cacheSetRequestRemove, cacheSetTargetAvatarCode, cacheSetTargetGmail, cacheSetTargetName } from "../../redux/reducers/chat.reducer";
 
 // Import service
 import { meregMessage } from "../../services/sendMessage.serv";
@@ -59,6 +59,7 @@ const ChatPage: React.FC = () => {
     const getChatCode = listChat[chatIndex].chatCode
     const getTargetGmail = listChat[chatIndex].gmail
     const getTargetName = listChat[chatIndex].username
+    const getTargetAvartarCode = listChat[chatIndex].avartarCode
 
     await meregMessage({
       chatCode: getChatCode
@@ -67,6 +68,7 @@ const ChatPage: React.FC = () => {
       cacheSetData(cacheSetChatCode(getChatCode))
       cacheSetData(cacheSetTargetName(getTargetName))
       cacheSetData(cacheSetTargetGmail(getTargetGmail))
+      cacheSetData(cacheSetTargetAvatarCode(getTargetAvartarCode))
       setIsChatBox(true);
     }).catch((err) => {
       console.warn(err)
@@ -123,7 +125,7 @@ const ChatPage: React.FC = () => {
 
                   <div className="chat__list__item--part chat__list__item__infoBox">
                     <div className="chat__list__item--part chat__list__item__avatarBox">
-                      <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="user avatar" />
+                      <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${chat.avartarCode}`} alt="user avatar" />
                     </div>
 
                     <div className="chat__list__item__infoBox--content">

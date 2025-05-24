@@ -10,7 +10,8 @@ const initial__userLocation = {
     clientLocation: [] as number[],
     listUserOnline: {} as Record<string, any>,
     shareLocationRequest: [] as interface__MapPage__RequestShareLocation[],
-    mapConnection: [] as interface__MapPage__MapConnection[]
+    mapConnection: [] as interface__MapPage__MapConnection[],
+    targetGmailForDetail: ""
 }
 
 // Export reducer
@@ -56,6 +57,10 @@ export const userLocation = createSlice({
         cacheSetUserLocation_mapConnection: (state, action: PayloadAction<interface__MapPage__MapConnection[]>) => {
             state.mapConnection = [...action.payload]
         },
+
+        cacheSetUserLocation_targetGmailForDetail: (state, action: PayloadAction<string>) => {
+            state.targetGmailForDetail = action.payload
+        },
     },
 })
 
@@ -66,7 +71,8 @@ export const {
     cacheSetUserLocation_clientLocation,
     cacheSetUserLocation_listUserOnline,
     cacheSetUserLocation_requestShareLocation,
-    cacheSetUserLocation_mapConnection
+    cacheSetUserLocation_mapConnection,
+    cacheSetUserLocation_targetGmailForDetail
 } = userLocation.actions;
 
 export default userLocation.reducer

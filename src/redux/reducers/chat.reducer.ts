@@ -16,7 +16,8 @@ const initial_userChat = {
     newMessages: [] as interface__ChatPage__message[],
     amountNewChat: {} as Record<string, any>,
     newMessages_sender: "",
-    lastMessages: {} as Record<string, any>
+    lastMessages: {} as Record<string, any>,
+    targetAvartarCode: "" as string
 }
 
 // Export reducer
@@ -26,6 +27,10 @@ export const userChat = createSlice({
     reducers: {
         cacheSetChatCode: (state, action: PayloadAction<string>) => {
             state.chatCode = action.payload
+        },
+
+        cacheSetTargetAvatarCode: (state, action: PayloadAction<string>) => {
+            state.targetAvartarCode = action.payload
         },
         
         cacheSetTargetGmail: (state, action: PayloadAction<string>) => {
@@ -88,6 +93,7 @@ export const userChat = createSlice({
 export const {
     cacheSetChatCode,
     cacheSetLastMessages,
+    cacheSetTargetAvatarCode,
     cacheSetDefaultLastMessages,
     cacheSetTargetGmail,
     cacheSetTargetName,

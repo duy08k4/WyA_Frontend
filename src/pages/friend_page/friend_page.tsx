@@ -189,7 +189,6 @@ const ChattingPage: React.FC = () => {
       ...getInvitation,
       gmail
     }
-    // console.log(dataForCancel)
     await revokeFriendRequest(dataForCancel).then((data) => {
       console.log(data)
     }).catch((err) => { console.error(err) })
@@ -204,7 +203,8 @@ const ChattingPage: React.FC = () => {
       username,
       avartarCode
     }
-
+    
+    console.log(dataForAccept)
     await acceptFriendRequest(dataForAccept).then((data) => {
       console.log(data)
     }).catch((err) => { console.error(err) })
@@ -261,7 +261,7 @@ const ChattingPage: React.FC = () => {
               </div>
 
               <div className="friend__avatar--profile">
-                <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${avartarCode}`} alt="Avatar User" />
               </div>
             </div>
 
@@ -273,7 +273,7 @@ const ChattingPage: React.FC = () => {
                       <div key={index} className="friend__search--item">
                         <div className="friend__search--user">
                           <div className="friend__search--userAvartar">
-                            <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                            <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${user.avartarCode}`} alt="Avatar User" />
                           </div>
 
                           <p className="friend__name--usersearch">{user.username}</p>
@@ -300,7 +300,7 @@ const ChattingPage: React.FC = () => {
                     <div key={index} className="friend__item--request">
                       <div className="friend__user">
                         <div className="friend__avatar--user">
-                          <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                          <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${request.request_avartarCode}`} alt="Avatar User" />
                         </div>
 
                         <p className="friend__name--user">{request.request_name}</p>
@@ -333,7 +333,7 @@ const ChattingPage: React.FC = () => {
                     <div key={index} className="friend__item--request">
                       <div className="friend__user">
                         <div className="friend__avatar--user">
-                          <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                          <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${request.request_avartarCode}`} alt="Avatar User" />
                         </div>
 
                         <p className="friend__name--user">{request.request_name}</p>
@@ -341,7 +341,7 @@ const ChattingPage: React.FC = () => {
 
                       <div className="friend__actions">
                         <button className="friend__button--revokeInvitation" onClick={() => { handleRevokeInvitation(index) }} >
-                          <i className="fas fa-trash"></i>
+                          <i className="fas fa-trash-alt"></i>
                         </button>
                       </div>
                     </div>
@@ -362,7 +362,7 @@ const ChattingPage: React.FC = () => {
                   <div key={index} className="friend__item--friend">
                     <div className="friend__user">
                       <div className="friend__avatar--user">
-                        <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="User avatar" />
+                        <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${friend.avartarCode}`} alt="User avatar" />
                       </div>
 
                       <div className="friend__info--user">

@@ -39,8 +39,10 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
     const chatCode = useSelector((state: RootState) => state.userChat.chatCode)
     const targetGmail = useSelector((state: RootState) => state.userChat.targetGmail)
     const targetName = useSelector((state: RootState) => state.userChat.targetName)
+    const targetAvartarCode = useSelector((state: RootState) => state.userChat.targetAvartarCode)
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
     const requestRemove = useSelector((state: RootState) => state.userChat.requestRemove)
+    const avartarCode = useSelector((state: RootState) => state.userInformation.avartarCode)
     const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline) // Object Type
 
     // Data
@@ -178,7 +180,7 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
 
 
                     <div className={`chatbox__avatar ${userOnline ? "online" : ""}`}>
-                        <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="avatar user" />
+                        <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${targetAvartarCode}`} alt="avatar user" />
                     </div>
 
                     <div className="chatbox__user--info">

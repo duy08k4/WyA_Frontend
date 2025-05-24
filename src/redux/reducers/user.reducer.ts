@@ -2,10 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DocumentData } from "firebase/firestore";
 
 // Import interface
-import { interface__FriendPage__connections, interface__FriendPage__friendRequest } from "../../types/interface__FriendPage";
+import { interface__FriendPage__connections, interface__FriendPage__friendRequest, UserInformation } from "../../types/interface__FriendPage";
 
 // Define initial values
-const initial_userInformation = {
+const initial_userInformation: UserInformation  = {
     username: "",
     gmail: "",
     uuid: "",
@@ -15,6 +15,7 @@ const initial_userInformation = {
     setting: {},
     listChatCode: [],
     lastMessage: {},
+    fullFriendInformation: [] as UserInformation[],
     profileStatus: ""
 }
 
@@ -59,9 +60,14 @@ export const userInformation = createSlice({
 
             return payload as typeof initial_userInformation;
         },
+        
         cacheSetDefaultUserInformation: (state) => {
             return {...initial_userInformation}
-        }
+        },
+
+        cacheSetFullFriendInformation: (state, action: PayloadAction<UserInformation[]>) => {
+            state.fullFriendInformation = [...action.payload]
+        },
     },
 })
 
@@ -73,6 +79,7 @@ export const {
     cacheSetFriendRequest,
     cacheSetFullUserInformation,
     cacheSetDefaultUserInformation,
+    cacheSetFullFriendInformation
 } = userInformation.actions;
 
 export default userInformation.reducer

@@ -2,7 +2,11 @@
 import { IonPage } from "@ionic/react";
 import React from "react";
 
-// Import components
+// Import component
+import SyncLoader from "react-spinners/ClipLoader"
+
+// Import images
+import logoApp  from "../../assets/logo.png"
 
 // Import css
 import "./starter_page.css"
@@ -12,12 +16,13 @@ const StarterPage:React.FC = () => (
     <IonPage>
         <div className="starterpage">
             <div className="starterpage__element starterpage__element--logoShowcase">
-                <img className="starterpage__element__logo" src="src/assets/logo.png" alt="no image" />
-                <h4 className="starterpage__element__slogan">find your friends</h4>
+                <img className="starterpage__element__logo" src={logoApp} alt="no image" />
+                <h4 className="starterpage__element__slogan">let find your friends</h4>
             </div>
 
             <div className="starterpage__element starterpage__element--loadingAssets">
-                <p className="starterpage__element--loading">Loading assets...</p>
+                {/* <p className="starterpage__element--loading">Loading assets...</p> */}
+                <SyncLoader color="white" size={50} />
             </div>
 
         </div>

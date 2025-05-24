@@ -10,6 +10,10 @@ interface interface__MapPage__Routing__Props {
     handleCloseRoutingTargetUser: () => void
 }
 
+interface interface__MapPage__DetailMarker__Props {
+    closeMenu: () => void,
+}
+
 interface interface__MapPage__SendRequestShareLocation {
     clientGmail: string,
     clientName: string,
@@ -55,6 +59,7 @@ interface interface__MapPage__Disconect {
 export type {
     interface__MapPage__Props,
     interface__MapPage__Routing__Props,
+    interface__MapPage__DetailMarker__Props,
 
     interface__MapPage__SendRequestShareLocation,
     interface__MapPage__RequestShareLocation,

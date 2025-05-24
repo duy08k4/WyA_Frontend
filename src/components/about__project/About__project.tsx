@@ -21,7 +21,6 @@ const AboutProject: React.FC = () => {
                     <li>Real-time location sharing.</li>
                     <li>Find Route to Friend.</li>
                     <li>Chatting.</li>
-                    <li>Notes</li>
                 </ul>
             </div>
         </div>

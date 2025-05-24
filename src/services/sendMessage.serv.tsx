@@ -31,7 +31,6 @@ const meregMessage = async (data: interface__ChatPage__merge) => {
     })
         .then(res => res.json())
         .then(data => {
-            console.log("data", data)
             return data
         })
 

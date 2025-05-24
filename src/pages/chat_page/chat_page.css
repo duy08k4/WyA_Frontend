@@ -19,15 +19,18 @@
 }
 
 .chat__button--back {
-    background: none;
+    background: transparent;
     border: none;
     padding: 8px;
     cursor: pointer;
-    color: #333333;
     font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    i {
+        color: #333333;
+    }
 }
 
 .chat__header--title {
