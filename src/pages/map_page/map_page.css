@@ -135,6 +135,7 @@
 }
 
 .mapPage__disconnect--button {
+    color: white;
     background-color: red;
     padding: 10px 20px;
     border-radius: 10px;

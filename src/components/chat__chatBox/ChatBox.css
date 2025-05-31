@@ -81,6 +81,7 @@
 .userStatus {
     margin-right: 5px;
     font-size: 10px !important;
+    color: red;
 }
 
 .userStatus.online {

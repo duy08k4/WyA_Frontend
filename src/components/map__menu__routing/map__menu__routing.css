@@ -1,5 +1,20 @@
+.menuRouting--item--request {
+    display: flex;
+    align-items: center;
+}
+
 .menu__buttonContainer--item--routing {
     button {
         background-color: #3e3f46;
     }
+}
+
+.removeRouting__btn {
+    color: white;
+    font-weight: 600;
+}
+
+.menu__name__routingMenu {
+    font-size: 16px;
+    font-weight: bolder;
 }

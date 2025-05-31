@@ -59,6 +59,8 @@ const ChattingPage: React.FC = () => {
   const friendRequest = useSelector((state: RootState) => state.userInformation.requests)
   const getFriendList = useSelector((state: RootState) => state.userInformation.friends)
 
+  const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
+
   // Custom hook
   const { addToast } = useToast()
   const { openSpinner, closeSpinner } = useSpinner()
@@ -203,7 +205,7 @@ const ChattingPage: React.FC = () => {
       username,
       avartarCode
     }
-    
+
     console.log(dataForAccept)
     await acceptFriendRequest(dataForAccept).then((data) => {
       console.log(data)
@@ -214,7 +216,19 @@ const ChattingPage: React.FC = () => {
 
   // Delete friend
   const handleDeleteFriend = (friendDeleteIndex: number) => {
-    setFriendDelete(friendList[friendDeleteIndex])
+    const friendRemove = friendList[friendDeleteIndex]
+    const checkUser = mapConnection.filter(connect => connect.gmail == friendRemove.gmail)
+    
+    if (checkUser.length == 0) {
+      setFriendDelete(friendRemove)
+    } else {
+      addToast({
+        typeToast: "w",
+        content: `Let disconnect this user in Map`,
+        duration: 5
+      })
+    }
+
   }
 
   const confirmForm_accept = async () => {
@@ -293,7 +307,7 @@ const ChattingPage: React.FC = () => {
 
           {requestConnection.length != 0 ? (
             <div className="friend__section">
-              <h2 className="friend__title--section">Request connection</h2>
+              <h2 className="friend__title--section">Friend request</h2>
               <div className="friend__container">
                 {requestConnection.map((request: interface__FriendPage__requestConnection, index) => {
                   return (
@@ -355,7 +369,7 @@ const ChattingPage: React.FC = () => {
 
           {/* Friends List Section */}
           <div className="friend__section">
-            <h2 className="friend__title--section">Connection ({friendList.length})</h2>
+            <h2 className="friend__title--section">Friends ({friendList.length})</h2>
             <div className="friend__container">
               {friendList.map((friend: interface__FriendPage__connections, index) => {
                 return (
@@ -370,7 +384,7 @@ const ChattingPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <button className="friend__item--friend--delete" onClick={() => { handleDeleteFriend(index) }}>Disconnect</button>
+                    <button className="friend__item--friend--delete" onClick={() => { handleDeleteFriend(index) }}>Remove</button>
                   </div>
                 )
               })}

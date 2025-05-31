@@ -141,7 +141,7 @@ const ContactPage: React.FC = () => {
                     <div className="contact__form__element">
                         <button className="contact__form__element__btn--send" onClick={sendGmail}>
                             <i className="fa-regular fa-envelope"></i>
-                            send
+                            <p>send</p>
                         </button>
                     </div>
                 </div>

@@ -50,7 +50,7 @@ const DashboardPage: React.FC = () => {
 
     useEffect(() => {
         let amount = Object.values(amountNewChat)
-            .filter(item => item.amountNewMessage !== 0)     // lọc theo điều kiện
+            .filter(item => item.amountNewMessage !== 0 && item.sender != gmail)     // lọc theo điều kiện
             .reduce((acc, item) => acc + item.amountNewMessage, 0);
 
         setIsNewMessage(amount == 0 ? false : true)
@@ -110,7 +110,7 @@ const DashboardPage: React.FC = () => {
                                 <p className="dashboard__menu__func--amount">!</p>
                             )}
                             <img src={friendIcon} className="dashboard__menu__func--icon" alt="Icon function" />
-                            <p className="dashboard__menu__func--title">Connection</p>
+                            <p className="dashboard__menu__func--title">Friends</p>
                         </div>
 
                         <div className="dashboard__menu__func dashboard__menu__func--todo" onClick={() => handleDirection("chat")}>

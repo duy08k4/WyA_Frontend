@@ -342,7 +342,7 @@ const ProfilePage: React.FC = () => {
             <div className="settings">
                 <div className="settings__header">
                     <button className="settings__back--button" onClick={handleDirection}>
-                        <i className="fa-solid fa-caret-left settings__back-icon"></i>
+                        <i className="fa-solid fa-caret-left settings__back--icon"></i>
                     </button>
 
                     <h1 className="setting__header--title">Profile</h1>

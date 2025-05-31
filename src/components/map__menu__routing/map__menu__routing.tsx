@@ -37,6 +37,7 @@ const MapRoutingMenu: React.FC<interface__MapPage__Routing__Props> = ({ closeMen
     // Redux
     const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
     const listUserOnline = useSelector((state: RootState) => state.userLocation.listUserOnline)
+    const targetRouting = useSelector((state: RootState) => state.userLocation.targetRouting)
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
 
     // Handlers
@@ -70,19 +71,22 @@ const MapRoutingMenu: React.FC<interface__MapPage__Routing__Props> = ({ closeMen
                         if (listUserOnline[btoa(connection.gmail)] == false) return ""
 
                         return (
-                            <div key={index} className="menu--item--request">
+                            <div key={index} className="menu--item--request menuRouting--item--request">
                                 <div className="menu--user">
                                     <div className="menu--userAvartar">
-                                        <img src="https://chiemtaimobile.vn/images/companies/1/%E1%BA%A2nh%20Blog/avatar-facebook-dep/Anh-avatar-hoat-hinh-de-thuong-xinh-xan.jpg?1704788263223" alt="Avatar User" />
+                                        <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${connection.avartarCode}`} alt="Avatar User" />
                                     </div>
 
-                                    <p className="menu__name">{connection.username}</p>
+                                    <p className="menu__name menu__name__routingMenu">{connection.username}</p>
                                 </div>
 
                                 <div className="menu__buttonContainer--item--request menu__buttonContainer--item--routing">
-                                    <button className="menu__button menu__button--request" onClick={() => { handleRoutingTargetUser(connection.gmail, connection.username) }}>
-                                        <i className="fas fa-directions"></i>
-                                    </button>
+
+                                    {targetRouting[btoa(connection.gmail)] ? "" : (
+                                        <button className="menu__button menu__button--request" onClick={() => { handleRoutingTargetUser(connection.gmail, connection.username) }}>
+                                            <i className="fas fa-directions"></i>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 
@@ -91,7 +95,7 @@ const MapRoutingMenu: React.FC<interface__MapPage__Routing__Props> = ({ closeMen
                 </div>
 
                 <div className="ConnectionMenu__btnBox">
-                    <button onClick={handleCloseRoutingTargetUser}>Remove routing</button>
+                    <button className="removeRouting__btn" onClick={() => { handleCloseRoutingTargetUser(true) }}>Remove routing</button>
                 </div>
             </div>
 

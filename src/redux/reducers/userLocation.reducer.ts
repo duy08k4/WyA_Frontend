@@ -20,15 +20,15 @@ export const userLocation = createSlice({
     initialState: initial__userLocation,
     reducers: {
         // Các action trong reducer sẽ được tự động tạo ra
-        cacheUpdateUserLocation_targetRouting: (state, action: PayloadAction<{ targetGmail: string, targetLocation: [number, number]}>) => {
+        cacheUpdateUserLocation_targetRouting: (state, action: PayloadAction<{ targetGmail: string | "", targetLocation: [number, number] | undefined}>) => {
             const data = action.payload
 
-            if (data.targetGmail != "") {
-                state.targetLocation = {
+            if (data.targetGmail != "" && data.targetLocation) {
+                state.targetRouting = {
                     [btoa(data.targetGmail)]: [...data.targetLocation]
                 }
             } else {
-                state.targetLocation = {}
+                state.targetRouting = {}
             }
         },
 

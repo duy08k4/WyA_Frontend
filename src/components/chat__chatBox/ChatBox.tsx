@@ -25,6 +25,7 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
     const [userOnline, setUserOnline] = useState<boolean>(false)
     const [chatBoxConfirm, setChatBoxConfirm] = useState<boolean>(false)
     const [inputPlaceholder, setInputPlaceholder] = useState<boolean>(false)
+    const [enableSendMessBtn, setEnableSendMessBtn] = useState<boolean>(false)
     const messageContainerRef = useRef<HTMLDivElement>(null);
     const messageInputRef = useRef<HTMLDivElement>(null);
 
@@ -81,7 +82,7 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
     const handleRevoke = async () => {
         openSpinner()
 
-        removeChat({
+        await removeChat({
             chatCode,
             requester: gmail,
             targetGmail,
@@ -108,7 +109,10 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
     const handleSendMessage = async () => {
         const getMessage = messageInputRef.current?.textContent?.trim() || '';
 
-        if (getMessage == "") return
+        if (getMessage == "") {
+            setEnableSendMessBtn(false)
+            return
+        }
 
         cacheAddAMessages({
             content: getMessage,
@@ -127,8 +131,23 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
             if (messageInputRef.current) {
                 messageInputRef.current.innerHTML = ""
             }
-        }).catch((err) => { console.log(err) })
+            setEnableSendMessBtn(false)
+
+        }).catch((err) => {
+            console.log(err)
+            setEnableSendMessBtn(false)
+        })
     }
+
+    const handleSendMessBtn = () => {
+        setEnableSendMessBtn(true)
+    }
+
+    useEffect(() => {
+        if (enableSendMessBtn) {
+            handleSendMessage()
+        }
+    }, [enableSendMessBtn])
 
     // Auto scroll to bottom
     useEffect(() => { // For message        
@@ -177,7 +196,6 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
                 </button>
 
                 <div className="chatbox__user">
-
 
                     <div className={`chatbox__avatar ${userOnline ? "online" : ""}`}>
                         <img src={`https://api.dicebear.com/8.x/bottts/svg?seed=${targetAvartarCode}`} alt="avatar user" />
@@ -240,7 +258,7 @@ const ChatBox: React.FC<interface__ChatPage__ChatBoxProps> = ({ closeChatBox }) 
             <div className="chatbox__input--container">
                 <div contentEditable="true" ref={messageInputRef} className={`chatbox__input ${inputPlaceholder ? "placeholder" : ""}`} onInput={autoScrollToBottom}></div>
 
-                <button className="chatbox__button--send" onClick={handleSendMessage}>
+                <button className="chatbox__button--send" onClick={handleSendMessBtn} disabled={enableSendMessBtn}>
                     <i className="fa-solid fa-paper-plane"></i>
                 </button>
             </div>

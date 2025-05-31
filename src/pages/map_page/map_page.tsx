@@ -33,7 +33,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine';
 import 'leaflet-defaulticon-compatibility';
 import { useCache } from "../../hooks/cache/cache";
-import { cacheSetUserLocation_targetGmailForDetail } from "../../redux/reducers/userLocation.reducer";
+import { cacheSetUserLocation_targetGmailForDetail, cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
 import { useToast } from "../../hooks/toastMessage/toast";
 
 // Client marker
@@ -59,6 +59,7 @@ const MapPage: React.FC = () => {
     const [routingControl, setRoutingControl] = useState<L.Routing.Control | null>(null);
     const [routes, setRoutes] = useState<any[]>([]);
     const [userRouting, setUserRouting] = useState<string>("")
+    const [userRouting_name, setUserRouting_name] = useState<string>("")
     const redirect = useHistory()
 
     // State map
@@ -66,9 +67,12 @@ const MapPage: React.FC = () => {
     const markerRef = useRef<LeafletMarker>(null)
     const interactionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [path, setPath] = useState<[number, number][]>([]); // Position history
-    const [position, setPosition] = useState<[number, number]>([10.8231, 106.6297]);
-    const [oldPosition, setOldPosition] = useState<[number, number]>([0, 0]);
+    // const [position, setPosition] = useState<[number, number]>([10.8231, 106.6297]);
+    // const [oldPosition, setOldPosition] = useState<[number, number]>([0, 0]);
     const [isUserInteracting, setIsUserInteracting] = useState(false);
+
+    const position = useRef<[number, number]>([10.8231, 106.6297]);
+    const oldPosition = useRef<[number, number]>([0, 0]);
 
     // Custom hook
     const { shareLocation } = useSocket()
@@ -126,7 +130,7 @@ const MapPage: React.FC = () => {
 
     const findMyLocation = () => {
         if (mapRef.current && position) {
-            mapRef.current.setView(position, 21)
+            mapRef.current.setView(position.current, 21)
         }
     }
 
@@ -140,10 +144,12 @@ const MapPage: React.FC = () => {
     const handleRoutingTargetUser = (targetGmail: string, targetName: string) => {
         const getLocationForRouting = targetLocation[btoa(targetGmail)]
         setUserRouting(targetGmail)
+        setUserRouting_name(targetName)
 
         if (getLocationForRouting) {
             clearRoute.current()
             calculateRoute.current(getLocationForRouting)
+            cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail, targetLocation: getLocationForRouting }))
             handleCloseMenuRouting()
         } else {
             addToast({
@@ -155,32 +161,51 @@ const MapPage: React.FC = () => {
     }
 
     useEffect(() => {
-        if (userRouting != "" && listUserOnline[btoa(userRouting)] == false) {
-            handleCloseRoutingTargetUser()
-            setUserRouting("")
+        if (userRouting != "" && userRouting_name != "") {
+            const getLocationForRouting = targetLocation[btoa(userRouting)]
+
+            if (getLocationForRouting) {
+                clearRoute.current()
+                calculateRoute.current(getLocationForRouting)
+            }
         }
-    }, [listUserOnline])
+    }, [position.current, targetLocation])
+
+    useEffect(() => {
+        if (userRouting != "" && listUserOnline[btoa(userRouting)] == false) {
+            handleCloseRoutingTargetUser(false)
+            setUserRouting("")
+            cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail: "", targetLocation: undefined }))
+            setUserRouting_name("")
+        } else {
+            const findUser = listFriends.filter(friend => friend.gmail == userRouting)
+            if (findUser.length == 0) {
+                handleCloseRoutingTargetUser(false)
+            }
+        }
+    }, [listUserOnline, listFriends])
 
     useEffect(() => {
         const newRequest = shareLocationRequest.filter(request => request.type === "receiver")
         setIsNewShareLocationRequest(newRequest.length != 0 ? true : false)
     }, [shareLocationRequest])
 
-    const handleCloseRoutingTargetUser = () => {
+    const handleCloseRoutingTargetUser = (isToast: boolean) => {
         clearRoute.current()
-        addToast({
-            typeToast: "s",
-            content: "Remove routing",
-            duration: 5
-        })
+        cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail: "", targetLocation: undefined }))
+
+        if (isToast) {
+            addToast({
+                typeToast: "s",
+                content: "Remove routing",
+                duration: 5
+            })
+        }
     }
 
     const handleDirection = () => {
         redirect.push("/")
     }
-
-    // Calculate Distance
-
 
     // Map
     const getPositionLoop = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -199,8 +224,22 @@ const MapPage: React.FC = () => {
                         coordinates.coords.latitude,
                         coordinates.coords.longitude
                     ]
-                    setOldPosition(position)
-                    setPosition(newPosition)
+
+                    if (oldPosition.current[0] === 0 && oldPosition.current[1] === 0) {
+                        position.current = [...newPosition]
+                        oldPosition.current = [...newPosition]
+
+                        shareLocation({
+                            clientGmail: gmail,
+                            clientLocation: newPosition,
+                            targetUsers: mapConnection
+                        })
+                    } else {
+                        if (oldPosition.current[0] !== newPosition[0] || oldPosition.current[1] !== newPosition[1]) {
+                            position.current = [...newPosition]
+                            oldPosition.current = [...newPosition]
+                        }
+                    }
 
                     if (mapRef.current) {
                         mapRef.current.setView(newPosition, mapRef.current.getZoom())
@@ -222,17 +261,18 @@ const MapPage: React.FC = () => {
                 getPositionLoop.current = null
             }
         }
-    }, [mapConnection])
+    }, [mapConnection.length])
 
     useEffect(() => {
-        // const distance = haversineDistance.current(oldPosition, position)
-        shareLocation({
-            clientGmail: gmail,
-            clientLocation: position,
-            targetUsers: mapConnection
-        })
+        setTimeout(() => {
+            shareLocation({
+                clientGmail: gmail,
+                clientLocation: position.current,
+                targetUsers: mapConnection
+            })
+        }, 1500)
 
-    }, [position])
+    }, [position.current, listUserOnline, mapConnection.length])
 
     const createTargetMarker = (targetAvartarCode: string) => {
         const targetMarker = `
@@ -265,7 +305,7 @@ const MapPage: React.FC = () => {
 
             // Tạo tuyến đường mới
             const waypoints = [
-                L.latLng(position[0], position[1]),
+                L.latLng(position.current[0], position.current[1]),
                 L.latLng(targetPosition[0], targetPosition[1]),
             ];
 
@@ -301,9 +341,9 @@ const MapPage: React.FC = () => {
 
     useEffect(() => {
         if (mapRef.current && position && !isUserInteracting) {
-            mapRef.current.setView(position, mapRef.current.getZoom())
+            mapRef.current.setView(position.current, mapRef.current.getZoom())
         }
-    }, [position, isUserInteracting])
+    }, [position.current, isUserInteracting])
 
     useEffect(() => {
         if (markerRef.current) {
@@ -326,10 +366,16 @@ const MapPage: React.FC = () => {
     useEffect(() => {
         if (mapConnection && mapConnection.length != 0) {
             setIsConnect(true)
+            const findTargetRouting = mapConnection.filter(connection => connection.gmail == userRouting)
+
+            if (findTargetRouting.length == 0) {
+                handleCloseRoutingTargetUser(false)
+            }
         } else {
             setIsConnect(false)
+            handleCloseRoutingTargetUser(false)
         }
-    }, [mapConnection])
+    }, [mapConnection.length])
 
     return (
         <IonPage>
@@ -351,7 +397,7 @@ const MapPage: React.FC = () => {
                                             style={{ ['--n' as any]: `${index}`, ['--count' as any]: index == maxAvartarBox - 1 ? `"${mapConnection?.length - maxAvartarBox}"` : `""` }}
                                         >
                                             <img
-                                                src={`https://api.dicebear.com/8.x/bottts/svg?seed=${avartarCode}`}
+                                                src={`https://api.dicebear.com/8.x/bottts/svg?seed=${connection.avartarCode}`}
                                                 alt="Avatar user"
                                             />
                                         </div>
@@ -387,17 +433,17 @@ const MapPage: React.FC = () => {
                             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                         // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
-                        <Marker position={position} icon={customIcon} ref={markerRef}></Marker>
+                        <Marker position={position.current} icon={customIcon} ref={markerRef}></Marker>
 
                         {mapConnection.map((connection, index) => {
                             const connectionGmail = connection.gmail
-                            if (targetLocation[btoa(connectionGmail)]) {
+                            if (targetLocation[btoa(connectionGmail)] && listUserOnline[btoa(connectionGmail)]) {
                                 return <Marker
                                     key={index}
                                     position={targetLocation[btoa(connectionGmail)]}
                                     icon={createTargetMarker(connection.avartarCode)} ref={markerRef}
                                     eventHandlers={{
-                                        click: () => { handleShowDetailMarker(connectionGmail) } 
+                                        click: () => { handleShowDetailMarker(connectionGmail) }
                                     }}
                                 ></Marker>
                             }
