@@ -83,6 +83,10 @@ export const SocketProvider: React.FC<interface__socketProviderProps> = ({ child
                 }))
             }
 
+            const checkUserShareLocation = mapConnection.filter(connection => connection.gmail == data.from)
+            console.log(data.from)
+            // console.log(mapConnection[0].gmail == data.from) 
+
             cacheSetData(cacheUpdateUserLocation_targetLocation({
                 targetGmail: data.from,
                 location: data.location

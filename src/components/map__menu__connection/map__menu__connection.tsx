@@ -21,14 +21,17 @@ import { useSpinner } from "../../hooks/spinner/spinner";
 // Import css
 import "leaflet/dist/leaflet.css";
 import "./map__menu__connection.css";
+import { useCache } from "../../hooks/cache/cache";
+import { cacheClearUserLocation_targetLocation, cacheRemoveUserLocation_targetLocation, cacheUpdateUserLocation_targetLocation, cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
 
-const MapConnectionMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) => {
+const MapConnectionMenu: React.FC<interface__MapPage__Props> = ({ closeMenu, closeRouting, closeRoutingTargetGmail }) => {
     // States
     const menuConnectionForm = useRef<HTMLDivElement>(null)
 
     // Custom hook
     const { addToast } = useToast()
     const { openSpinner, closeSpinner } = useSpinner()
+    const { cacheSetData } = useCache()
 
     // Error
 
@@ -37,6 +40,17 @@ const MapConnectionMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) =
     // Redux
     const mapConnection = useSelector((state: RootState) => state.userLocation.mapConnection)
     const gmail = useSelector((state: RootState) => state.userInformation.gmail)
+
+    // Function
+    const removeRouting = useRef((isDisconnectAll: boolean, targetGmail: string | undefined) => {
+        if (isDisconnectAll) {
+            closeRouting(false)
+        } else {
+            if (targetGmail == closeRoutingTargetGmail) {
+                closeRouting(true)
+            }
+        }
+    })
 
     // Handlers
 
@@ -67,6 +81,8 @@ const MapConnectionMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) =
         }).then((data) => {
             closeSpinner()
             if (data.status == 200) {
+                cacheSetData(cacheRemoveUserLocation_targetLocation({targetGmail: connection.gmail}))
+                removeRouting.current(false, connection.gmail)
                 addToast({
                     typeToast: "s",
                     content: data.data.mess,
@@ -103,7 +119,9 @@ const MapConnectionMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) =
             closeSpinner()
             if (data.status == 200) {
                 closeMenu()
-
+                cacheSetData(cacheClearUserLocation_targetLocation())
+                cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail: "", targetLocation: undefined }))
+                removeRouting.current(true, undefined)
             } else {
                 addToast({
                     typeToast: "e",

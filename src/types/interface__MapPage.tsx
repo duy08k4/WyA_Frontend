@@ -2,6 +2,12 @@ import { interface__FriendPage__connections } from "./interface__FriendPage"
 
 interface interface__MapPage__Props {
     closeMenu: () => void,
+    closeRouting: (isToast: boolean) => void,
+    closeRoutingTargetGmail: string
+}
+
+interface interface__MapPage__Menu__Props {
+    closeMenu: () => void,
 }
 
 interface interface__MapPage__Routing__Props {
@@ -58,6 +64,7 @@ interface interface__MapPage__Disconect {
 
 export type {
     interface__MapPage__Props,
+    interface__MapPage__Menu__Props,
     interface__MapPage__Routing__Props,
     interface__MapPage__DetailMarker__Props,
 

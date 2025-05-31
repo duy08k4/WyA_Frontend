@@ -20,7 +20,7 @@ export const userLocation = createSlice({
     initialState: initial__userLocation,
     reducers: {
         // Các action trong reducer sẽ được tự động tạo ra
-        cacheUpdateUserLocation_targetRouting: (state, action: PayloadAction<{ targetGmail: string | "", targetLocation: [number, number] | undefined}>) => {
+        cacheUpdateUserLocation_targetRouting: (state, action: PayloadAction<{ targetGmail: string | "", targetLocation: [number, number] | undefined }>) => {
             const data = action.payload
 
             if (data.targetGmail != "" && data.targetLocation) {
@@ -32,10 +32,24 @@ export const userLocation = createSlice({
             }
         },
 
-        cacheUpdateUserLocation_targetLocation: (state, action: PayloadAction<{ targetGmail: string, location: [number, number] }>) => {
+        cacheUpdateUserLocation_targetLocation: (state, action: PayloadAction<{ targetGmail: string | "", location: [number, number] | undefined }>) => {
             const getTargetGmail = action.payload.targetGmail
             const getTargetLocation = action.payload.location
-            state.targetLocation[btoa(getTargetGmail)] = getTargetLocation
+
+            if (getTargetGmail != "" && getTargetLocation) {
+                state.targetLocation[btoa(getTargetGmail)] = getTargetLocation
+            } else {
+                state.targetLocation = {}
+            }
+        },
+
+        cacheClearUserLocation_targetLocation: (state) => {
+            state.targetLocation = {};
+        },
+
+        cacheRemoveUserLocation_targetLocation: (state, action: PayloadAction<{ targetGmail: string }>) => {
+            const getTargetGmail = action.payload.targetGmail
+            delete state.targetLocation[btoa(getTargetGmail)]
         },
 
         cacheUpdateUserLocation_targetLocation_setAll: (state, action: PayloadAction<Record<string, [number, number]>>) => {
@@ -67,12 +81,14 @@ export const userLocation = createSlice({
 export const {
     cacheUpdateUserLocation_targetRouting,
     cacheUpdateUserLocation_targetLocation,
+    cacheRemoveUserLocation_targetLocation,
     cacheUpdateUserLocation_targetLocation_setAll,
     cacheSetUserLocation_clientLocation,
     cacheSetUserLocation_listUserOnline,
     cacheSetUserLocation_requestShareLocation,
     cacheSetUserLocation_mapConnection,
-    cacheSetUserLocation_targetGmailForDetail
+    cacheSetUserLocation_targetGmailForDetail,
+    cacheClearUserLocation_targetLocation
 } = userLocation.actions;
 
 export default userLocation.reducer

@@ -33,7 +33,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine';
 import 'leaflet-defaulticon-compatibility';
 import { useCache } from "../../hooks/cache/cache";
-import { cacheSetUserLocation_targetGmailForDetail, cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
+import { cacheRemoveUserLocation_targetLocation, cacheSetUserLocation_targetGmailForDetail, cacheUpdateUserLocation_targetRouting } from "../../redux/reducers/userLocation.reducer";
 import { useToast } from "../../hooks/toastMessage/toast";
 
 // Client marker
@@ -161,21 +161,11 @@ const MapPage: React.FC = () => {
     }
 
     useEffect(() => {
-        if (userRouting != "" && userRouting_name != "") {
-            const getLocationForRouting = targetLocation[btoa(userRouting)]
-
-            if (getLocationForRouting) {
-                clearRoute.current()
-                calculateRoute.current(getLocationForRouting)
-            }
-        }
-    }, [position.current, targetLocation])
-
-    useEffect(() => {
         if (userRouting != "" && listUserOnline[btoa(userRouting)] == false) {
             handleCloseRoutingTargetUser(false)
             setUserRouting("")
             cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail: "", targetLocation: undefined }))
+            // cacheSetData(cacheRemoveUserLocation_targetLocation({ targetGmail }))
             setUserRouting_name("")
         } else {
             const findUser = listFriends.filter(friend => friend.gmail == userRouting)
@@ -192,8 +182,6 @@ const MapPage: React.FC = () => {
 
     const handleCloseRoutingTargetUser = (isToast: boolean) => {
         clearRoute.current()
-        cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail: "", targetLocation: undefined }))
-
         if (isToast) {
             addToast({
                 typeToast: "s",
@@ -201,6 +189,8 @@ const MapPage: React.FC = () => {
                 duration: 5
             })
         }
+
+        cacheSetData(cacheUpdateUserLocation_targetRouting({ targetGmail: "", targetLocation: undefined }))
     }
 
     const handleDirection = () => {
@@ -377,6 +367,45 @@ const MapPage: React.FC = () => {
         }
     }, [mapConnection.length])
 
+    useEffect(() => {
+        (async () => {
+            try {
+                const coordinates = await Geolocation.getCurrentPosition({
+                    enableHighAccuracy: true,
+                    timeout: 30000,
+                    maximumAge: 0
+                })
+
+                const newPosition: [number, number] = [
+                    coordinates.coords.latitude,
+                    coordinates.coords.longitude
+                ]
+
+                if (oldPosition.current[0] === 0 && oldPosition.current[1] === 0) {
+                    position.current = [...newPosition]
+                    oldPosition.current = [...newPosition]
+
+                    shareLocation({
+                        clientGmail: gmail,
+                        clientLocation: newPosition,
+                        targetUsers: mapConnection
+                    })
+                } else {
+                    if (oldPosition.current[0] !== newPosition[0] || oldPosition.current[1] !== newPosition[1]) {
+                        position.current = [...newPosition]
+                        oldPosition.current = [...newPosition]
+                    }
+                }
+
+                if (mapRef.current) {
+                    mapRef.current.setView(newPosition, mapRef.current.getZoom())
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        })()
+    }, [mapConnection.length])
+
     return (
         <IonPage>
             <div className="mapPage">
@@ -476,7 +505,7 @@ const MapPage: React.FC = () => {
                 )}
 
                 {!haveConnection ? " " : (
-                    <MapConnectionMenu closeMenu={handleCloseMenuConnection} />
+                    <MapConnectionMenu closeMenu={handleCloseMenuConnection} closeRouting={handleCloseRoutingTargetUser} closeRoutingTargetGmail={userRouting} />
                 )}
 
                 {!isRouting ? "" : (

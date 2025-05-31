@@ -7,7 +7,7 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import { acceptRequestShareLocation, revokeRequestShareLocation, sendRequestShareLocation } from "../../services/mapFunction.serv";
 
 // Import interface
-import { interface__MapPage__AcceptRequestShareLocation, interface__MapPage__Props, interface__MapPage__RequestShareLocation } from "../../types/interface__MapPage";
+import { interface__MapPage__AcceptRequestShareLocation, interface__MapPage__Menu__Props, interface__MapPage__RequestShareLocation } from "../../types/interface__MapPage";
 import { interface__FriendPage__connections } from "../../types/interface__FriendPage";
 
 // Import redux
@@ -22,7 +22,7 @@ import { useSpinner } from "../../hooks/spinner/spinner";
 import "leaflet/dist/leaflet.css";
 import "./mapMenu.css";
 
-const MapMenu: React.FC<interface__MapPage__Props> = ({ closeMenu }) => {
+const MapMenu: React.FC<interface__MapPage__Menu__Props> = ({ closeMenu }) => {
     // States
     const menuForm = useRef<HTMLDivElement>(null)
     const [chooseFriend, setChooseFriend] = useState<boolean>(true)
