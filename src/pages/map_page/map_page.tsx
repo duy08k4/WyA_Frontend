@@ -14,9 +14,6 @@ import MapPage__DetailMarker from "../../components/map__detailMarker/map__detai
 import "./map_page.css";
 import "../../main.css";
 
-// Ionic 
-import { Capacitor } from "@capacitor/core";
-
 // Custom hook
 import { useSpinner } from "../../hooks/spinner/spinner";
 import { useSocket } from "../../hooks/socket/socket";
@@ -131,6 +128,7 @@ const MapPage: React.FC = () => {
     const findMyLocation = () => {
         if (mapRef.current && position) {
             mapRef.current.setView(position.current, 21)
+            setIsUserInteracting(false)
         }
     }
 
@@ -231,7 +229,7 @@ const MapPage: React.FC = () => {
                         }
                     }
 
-                    if (mapRef.current) {
+                    if (mapRef.current && isUserInteracting == false) {
                         mapRef.current.setView(newPosition, mapRef.current.getZoom())
                     }
                 } catch (error) {
@@ -341,6 +339,7 @@ const MapPage: React.FC = () => {
         }
     }, []);
 
+    // Ngăn tự động set view
     mapRef.current?.on("movestart", () => {
         setIsUserInteracting(true);
 
@@ -459,8 +458,8 @@ const MapPage: React.FC = () => {
                         }}
                     >
                         <TileLayer
-                            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                        // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution="&copy; OpenStreetMap contributors"
                         />
                         <Marker position={position.current} icon={customIcon} ref={markerRef}></Marker>
 
