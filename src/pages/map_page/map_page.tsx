@@ -319,6 +319,12 @@ const MapPage: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        if (userRouting && targetLocation[btoa(userRouting)]) {
+            calculateRoute.current(targetLocation[btoa(userRouting)]);
+        }
+    }, [targetLocation[btoa(userRouting)]]);
+
     // Hàm xóa tuyến đường
     clearRoute.current = () => {
         if (mapRef.current && routingControl) {
@@ -396,7 +402,7 @@ const MapPage: React.FC = () => {
                     }
                 }
 
-                if (mapRef.current) {
+                if (mapRef.current && isUserInteracting == false) {
                     mapRef.current.setView(newPosition, mapRef.current.getZoom())
                 }
             } catch (error) {
